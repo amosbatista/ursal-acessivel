@@ -7,11 +7,13 @@
     "start": "npm run tsc && npm run init",
     "init": "node ./dist/index.js",
     "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
     "typescript": "^4.9.5"
   }
 }
