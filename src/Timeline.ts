@@ -1,5 +1,10 @@
-class Timeline {
+import { 
+  IPost,
+} from "./Post"
 
+interface ITimeline {
+  posts: IPost[]
 }
 
-export { Timeline }
+
+export { ITimeline }
