@@ -1,6 +1,6 @@
 import { 
   IPost,
-} from "./Post"
+} from "../Post"
 
 interface ITimeline {
   posts: IPost[]
