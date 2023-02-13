@@ -2,7 +2,7 @@ import { TimelineMastodonService  } from "./timeline/Timeline.Mastodon.service";
 //import { ITimeline } from "./timeline/Timeline";
 import { Runner } from "./Runner";
 
-console.log("requisição bookmark");
+/*console.log("requisição bookmark");
 
 const runner = new Runner();
 
@@ -24,5 +24,16 @@ runner.Init(() => {
   timelineService.LoadTimeline() 
 });
 
+*/
 
 
+
+import { TimelineStreamService } from "./timeline/Timeline.stream.service";
+
+
+const stream = new TimelineStreamService();
+
+
+while(true ) {
+  
+}
