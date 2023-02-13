@@ -2,8 +2,9 @@ class Runner {
   canRunAnotherProcess: boolean;
   interval: any;
 
-  constructor() {
-    this.canRunAnotherProcess = true
+  constructor(
+    private secondsToAnother: number) {
+    this.canRunAnotherProcess = true;
   }
 
   Init(toExecute:any ) {
@@ -13,7 +14,7 @@ class Runner {
         this.canRunAnotherProcess = false;
         toExecute();
       }
-    }, 5 * 1000)
+    }, this.secondsToAnother * 1000)
   }
 
   FreeToAnotherRun() {

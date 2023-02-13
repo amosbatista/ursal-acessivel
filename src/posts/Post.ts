@@ -1,8 +1,9 @@
-import { IUser } from "./User";
+import { IUser } from "../User";
 
 interface IPost {
   id: string,
   content: string,
+  url: string,
   media: IMedia[],
   user: IUser,
 }
@@ -21,11 +22,12 @@ class Post {
     return {
       id: toot.id,
       content: toot.content,
+      url: toot.url,
       user: {
-        id: toot.account.id,
-        userName: toot.account.username,
+        id: toot.account?.id,
+        userName: toot.account?.username,
       },
-      media: toot.media_attachments.map((media: {
+      media: toot.media_attachments?.map((media: {
         description: any; id: any; url: any; type: any
       })  => ({
         id: media.id,
