@@ -3,7 +3,8 @@ import {
 } from "../posts/Post"
 
 interface ITimeline {
-  posts: IPost[]
+  posts: IPost[],
+  minId: string
 }
 
 
