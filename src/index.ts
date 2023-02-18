@@ -1,16 +1,21 @@
 import { TimelineMastodonService  } from "./timeline/Timeline.Mastodon.service";
 import { Timeline, ITimeline} from "./timeline/Timeline";
+import { TimelineFactory } from "./persistence/PersistenseFactory";
 import { Runner } from "./Runner";
 import { IPost } from "./posts/Post";
-import { IUser } from './User'
+import { IUser } from './users/User'
 import StackHelper from "./Stack";
 import { StatusService } from "./status/Status.service";
 import {  CreateStatusForNonAcessiblePost } from "./status/Status";
 
 console.log("requisição bookmark");
 
-const TIMELINE_REFRESH_SECONDS = 50;
-const STATUS_REFRESH_SECONDS = 200;
+const TIMELINE_REFRESH_SECONDS = 600;
+const STATUS_REFRESH_SECONDS = 60;
+
+let lastTimeline: ITimeline;
+
+const timelinePersistence = TimelineFactory();
 
 const timelineRunner = new Runner(TIMELINE_REFRESH_SECONDS);
 const timelineService = new TimelineMastodonService();
@@ -19,6 +24,12 @@ const postsWithoutAcessibilty = new StackHelper(
   "Posts sem acessibilidade",
   console,
   false
+);
+const sentStatusList = new StackHelper(
+  new Array<IPost>(),
+  "Posts com status enviado",
+  console,
+  true
 );
 
 const usersAlreadyWarned = new StackHelper(
@@ -31,14 +42,27 @@ const usersAlreadyWarned = new StackHelper(
 timelineService.timeline$.subscribe({
 
   next: (timelinePosts: ITimeline ) => {
-    timelineRunner.FreeToAnotherRun()
+    timelineRunner.FreeToAnotherRun();
+
+    lastTimeline = timelinePosts;
+    timelinePersistence.SaveData(timelinePosts);
     
     const timeline = new Timeline(timelinePosts);
     const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
 
+    if(getPostsWithoutAcessibility.length <= 0) {
+      console.log("Não há toots com problemas")
+    }
+
     getPostsWithoutAcessibility.forEach(post => {
       if(shouldPostSendToReturnList(post, usersAlreadyWarned.Get())) {
-        postsWithoutAcessibilty.Add(post)
+
+        if(!sentStatusList.Get().find( (sentStatus: IPost) => {
+          return sentStatus.id == post.id
+        } )){
+          sentStatusList.Add(post);
+          postsWithoutAcessibilty.Add(post)
+        }
       }
     })
   },error: (err) => {
@@ -46,11 +70,6 @@ timelineService.timeline$.subscribe({
     console.log('Erro ao consultar timeline', err)
   }
 })
-
-timelineRunner.Init(() => {
-  timelineService.LoadTimeline() 
-});
-
 
 
 const statusService = new StatusService();
@@ -66,9 +85,17 @@ statusService.Status$.subscribe({
   },
 })
 
+
+
+timelinePersistence.SavedData$.subscribe({
+  next: () => {
+    console.log("Timeline atualizada");
+  }
+})
+
+
+// Status post processor
 const returnStatusRunner = new Runner(STATUS_REFRESH_SECONDS);
-
-
 returnStatusRunner.Init(() => {
   const postToReturn = postsWithoutAcessibilty.Top();
   if(postToReturn) {
@@ -76,8 +103,30 @@ returnStatusRunner.Init(() => {
 
     statusService.Post(status);
   }
-})
+  else {
+    console.log("lista de retorno vazia")
+    returnStatusRunner.FreeToAnotherRun()
+  }
+});
 
+
+
+
+//  Timeline processor
+timelinePersistence.LoadedData$.subscribe({
+  next: (loaded: ITimeline) => {
+    console.log('carregada timeline')
+
+    lastTimeline = loaded;
+
+    timelineRunner.Init(() => {
+      timelineService.LoadTimeline(lastTimeline.minId) 
+    });
+  }
+});
+
+
+timelinePersistence.LoadData();
 
 
 
@@ -96,12 +145,3 @@ const shouldPostSendToReturnList = (
 export {shouldPostSendToReturnList}
 
 
-//import { TimelineStreamService } from "./timeline/Timeline.stream.service";
-
-
-//const stream = new TimelineStreamService();
-//stream.Connect()
-
-//while(true ) {
-  
-//}

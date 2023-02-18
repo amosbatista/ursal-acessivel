@@ -7,16 +7,22 @@ class TimelineMastodonService {
 
   timeline$ = new Subject<ITimeline>();
 
-  LoadTimeline = async () => {
+  LoadTimeline = async (minId: string) => {
 
     try{
-      console.log("iniciando listagem timeline")
-      await axios.get('https://ursal.zone/api/v1/timelines/public?local=true&only_media=true&limit=40', {
+      const urlSearch = `https://ursal.zone/api/v1/timelines/public?local=true&only_media=true&limit=40
+      ${ minId != "0" ? `&min_id=${minId}` : '' } `;
+
+      console.log("iniciando listagem timeline", urlSearch)
+
+      await axios.get(urlSearch, {
         headers: {
           Autorizathion: 'Bearer NGNCoXx5Pm7GxM_1wpHTrNRZrdRlMvAMrudEzMdH5hc',
         }
       }).then(response => {
+        const lastPost = response.data.length - 1;
         const timeline:ITimeline = {
+          minId: response.data[lastPost].id, 
           posts: response.data.map((toot:any) => {
             const post = new Post();
   

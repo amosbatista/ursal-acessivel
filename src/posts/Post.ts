@@ -1,4 +1,4 @@
-import { IUser } from "../User";
+import { IUser } from "../users/User";
 
 interface IPost {
   id: string,
@@ -6,6 +6,7 @@ interface IPost {
   url: string,
   media: IMedia[],
   user: IUser,
+  creationData: string,
 }
 
 
@@ -23,6 +24,7 @@ class Post {
       id: toot.id,
       content: toot.content,
       url: toot.url,
+      creationData: toot.created_at,
       user: {
         id: toot.account?.id,
         userName: toot.account?.username,

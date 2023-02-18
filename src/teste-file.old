@@ -1,0 +1,27 @@
+import { TimelineFactory } from "./persistence/PersistenseFactory";
+import { ITimeline } from "./timeline/Timeline";
+
+const persistence = TimelineFactory();
+const objToPersist: ITimeline = {
+  minId: '222',
+  posts: []
+}
+
+
+persistence.SavedData$.subscribe({
+  next: () => {
+    console.log("salvo")
+  },
+})
+
+persistence.LoadedData$.subscribe({
+  next: (value:ITimeline) => {
+    console.log("carreguei isto", value)
+  }
+})
+console.log("salvando objeto")
+persistence.SaveData(objToPersist);
+
+setTimeout(() => {
+  persistence.LoadData();
+}, 5 * 1000);
