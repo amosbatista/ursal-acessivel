@@ -32,7 +32,7 @@ class StatusService {
             visibility: 'direct'
           }, {
             headers: {
-              Authorization: 'Bearer NGNCoXx5Pm7GxM_1wpHTrNRZrdRlMvAMrudEzMdH5hc',
+              Authorization: `Bearer ${process.env.MASTODON_KEY}`,
             },
           }
         ).then(toot => {
