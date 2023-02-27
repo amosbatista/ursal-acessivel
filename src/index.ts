@@ -1,6 +1,6 @@
 import { TimelineMastodonService  } from "./timeline/Timeline.Mastodon.service";
 import { Timeline, ITimeline} from "./timeline/Timeline";
-import { TimelineFactory } from "./persistence/PersistenseFactory";
+import { TimelineFactory, SentPostFactory } from "./persistence/PersistenseFactory";
 import { Runner } from "./Runner";
 import { IPost } from "./posts/Post";
 import { IUser } from './users/User'
@@ -8,14 +8,17 @@ import StackHelper from "./Stack";
 import { StatusService } from "./status/Status.service";
 import {  CreateStatusForNonAcessiblePost } from "./status/Status";
 
+import { combineLatest } from 'rxjs';
+
 console.log("requisição bookmark");
 
 const TIMELINE_REFRESH_SECONDS = 600;
-const STATUS_REFRESH_SECONDS = 60;
+const STATUS_REFRESH_SECONDS = 120;
 
 let lastTimeline: ITimeline;
 
 const timelinePersistence = TimelineFactory();
+const sentPostPersistence = SentPostFactory();
 
 const timelineRunner = new Runner(TIMELINE_REFRESH_SECONDS);
 const timelineService = new TimelineMastodonService();
@@ -25,12 +28,6 @@ const postsWithoutAcessibilty = new StackHelper(
   console,
   false
 );
-const sentStatusList = new StackHelper(
-  new Array<IPost>(),
-  "Posts com status enviado",
-  console,
-  true
-);
 
 const usersAlreadyWarned = new StackHelper(
   new Array<IUser>(),
@@ -39,35 +36,51 @@ const usersAlreadyWarned = new StackHelper(
   true
 );
 
+const sentStatusList = new StackHelper(
+  new Array<IPost>(),
+  "Posts com status enviado",
+  console,
+  true
+);
+
 timelineService.timeline$.subscribe({
 
-  next: (timelinePosts: ITimeline ) => {
+  next: (timelinePosts ) => {
+
     timelineRunner.FreeToAnotherRun();
 
-    lastTimeline = timelinePosts;
-    timelinePersistence.SaveData(timelinePosts);
-    
-    const timeline = new Timeline(timelinePosts);
-    const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
-
-    if(getPostsWithoutAcessibility.length <= 0) {
-      console.log("Não há toots com problemas")
+    if(timelinePosts.error)  {
+      console.log(timelinePosts.error.message, timelinePosts.error.objectError);
     }
+    else {
+      if(timelinePosts.timeline) {
 
-    getPostsWithoutAcessibility.forEach(post => {
-      if(shouldPostSendToReturnList(post, usersAlreadyWarned.Get())) {
+      
+        lastTimeline = timelinePosts.timeline;
+        timelinePersistence.SaveData(timelinePosts.timeline);
+        
+        const timeline = new Timeline(timelinePosts.timeline);
+        const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
 
-        if(!sentStatusList.Get().find( (sentStatus: IPost) => {
-          return sentStatus.id == post.id
-        } )){
-          sentStatusList.Add(post);
-          postsWithoutAcessibilty.Add(post)
+        if(getPostsWithoutAcessibility.length <= 0) {
+          console.log("Não há toots com problemas")
         }
+
+        getPostsWithoutAcessibility.forEach(post => {
+          if(shouldPostSendToReturnList(post, usersAlreadyWarned.Get())) {
+
+            if(!sentStatusList.Get().find( (sentStatus: IPost) => {
+              return sentStatus.id == post.id
+            } )){
+              sentStatusList.Add(post);
+              postsWithoutAcessibilty.Add(post)
+            }
+          }
+        })
+
+        sentPostPersistence.SaveData(sentStatusList.Get());
       }
-    })
-  },error: (err) => {
-    timelineRunner.FreeToAnotherRun()
-    console.log('Erro ao consultar timeline', err)
+    }
   }
 })
 
@@ -91,7 +104,15 @@ timelinePersistence.SavedData$.subscribe({
   next: () => {
     console.log("Timeline atualizada");
   }
-})
+});
+
+sentPostPersistence.SavedData$.subscribe({
+  next: () => {
+    console.log("Lista de posts a serem enviadas atualizada");
+  }
+});
+
+
 
 
 // Status post processor
@@ -113,21 +134,31 @@ returnStatusRunner.Init(() => {
 
 
 //  Timeline processor
-timelinePersistence.LoadedData$.subscribe({
-  next: (loaded: ITimeline) => {
-    console.log('carregada timeline')
+combineLatest([
+  timelinePersistence.LoadedData$,
+  sentPostPersistence.LoadedData$
+]).subscribe({
+  next: ([
+    timelineLoaded,
+    sentPostsLoaded
+  ]) => {
+    console.log('carregada timeline e posts')
 
-    lastTimeline = loaded;
+    lastTimeline = timelineLoaded;
+    sentPostsLoaded.forEach(sentPost => {
+      sentStatusList.Add(sentPost);
+    });
 
     timelineRunner.Init(() => {
       timelineService.LoadTimeline(lastTimeline.minId) 
     });
   }
-});
+})
 
 
 timelinePersistence.LoadData();
-
+sentPostPersistence.LoadData();
+console.log("env", process.env.MASTODON_KEY)
 
 
 

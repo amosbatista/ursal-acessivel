@@ -2,10 +2,14 @@ import { Subject } from 'rxjs';
 import { ITimeline } from './Timeline';
 import { Post } from '../posts/Post';
 import axios from 'axios';
+import { IError } from '../IError';
 
 class TimelineMastodonService {
 
-  timeline$ = new Subject<ITimeline>();
+  timeline$ = new Subject<{ 
+    timeline: ITimeline | null ,
+    error: IError | null
+  }>();
 
   LoadTimeline = async (minId: string) => {
 
@@ -30,15 +34,28 @@ class TimelineMastodonService {
           })
         }
 
-        this.timeline$.next(timeline);
+        this.timeline$.next({
+          error: null,
+          timeline
+        });
       }).catch(err => {
-        console.log('erro na requisição timeline', err);
-        this.timeline$.error("Erro ao gerar timeline");
+        this.timeline$.next({
+          timeline: null,
+          error: {
+            message: 'erro na requisição timeline',
+            objectError: err
+          }
+        });
       });
     }
     catch(err) {
-      console.log('erro na requisição timeline (try catch)', err);
-      this.timeline$.error("Erro ao gerar timeline");
+      this.timeline$.next({
+        timeline: null,
+        error: {
+          message: 'erro na requisição timeline (try catch)',
+          objectError: err
+        }
+      });      
     }
 
     /*this.timeline$.next({
