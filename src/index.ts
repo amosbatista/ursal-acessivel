@@ -7,13 +7,12 @@ import { IUser } from './users/User'
 import StackHelper from "./Stack";
 import { StatusService } from "./status/Status.service";
 import {  CreateStatusForNonAcessiblePost } from "./status/Status";
-
 import { combineLatest } from 'rxjs';
 
 console.log("requisição bookmark");
 
-const TIMELINE_REFRESH_SECONDS = 600;
-const STATUS_REFRESH_SECONDS = 120;
+const TIMELINE_REFRESH_SECONDS = 900;
+const STATUS_REFRESH_SECONDS = 360;
 
 let lastTimeline: ITimeline;
 
@@ -172,6 +171,8 @@ const shouldPostSendToReturnList = (
   }) ? false : true;
 
 }
+
+
 
 export {shouldPostSendToReturnList}
 

@@ -21,10 +21,13 @@ class TimelineMastodonService {
 
       await axios.get(urlSearch, {
         headers: {
-          Autorizathion: `Bearer ${process.env.MASTODON_KEY}`,
+          Autorizathion: `Bearer NGNCoXx5Pm7GxM_1wpHTrNRZrdRlMvAMrudEzMdH5hc`,
         }
       }).then(response => {
         const lastPost = response.data.length - 1;
+        if(!response.data[lastPost]) {
+          console.log('Obj response com problemas', response);
+        }
         const timeline:ITimeline = {
           minId: response.data[lastPost].id, 
           posts: response.data.map((toot:any) => {
