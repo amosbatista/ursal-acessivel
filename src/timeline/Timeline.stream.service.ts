@@ -29,7 +29,7 @@ class TimelineStreamService {
     try{
       const wb = new WebSocket('wss://ursal.zone/api/v1/streaming/public/local', {
         headers: {
-          Authorization: 'Bearer NGNCoXx5Pm7GxM_1wpHTrNRZrdRlMvAMrudEzMdH5hc'
+          Authorization: `Bearer ${process.env.MASTODON_KEY}`
         }
       })
 

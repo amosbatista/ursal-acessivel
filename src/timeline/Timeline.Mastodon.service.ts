@@ -21,7 +21,7 @@ class TimelineMastodonService {
 
       await axios.get(urlSearch, {
         headers: {
-          Autorizathion: `Bearer NGNCoXx5Pm7GxM_1wpHTrNRZrdRlMvAMrudEzMdH5hc`,
+          Autorizathion: `Bearer ${process.env.MASTODON_KEY}`,
         }
       }).then(response => {
         const lastPost = response.data.length - 1;

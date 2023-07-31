@@ -8,6 +8,8 @@ import StackHelper from "./Stack";
 import { StatusService } from "./status/Status.service";
 import {  CreateStatusForNonAcessiblePost } from "./status/Status";
 import { combineLatest } from 'rxjs';
+import 'dotenv/config'
+
 
 console.log("requisição bookmark");
 
@@ -154,12 +156,8 @@ combineLatest([
   }
 })
 
-
 timelinePersistence.LoadData();
 sentPostPersistence.LoadData();
-console.log("env", process.env.MASTODON_KEY)
-
-
 
 const shouldPostSendToReturnList = (
   post: IPost,
