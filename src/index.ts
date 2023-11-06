@@ -11,7 +11,7 @@ import { combineLatest } from 'rxjs';
 import 'dotenv/config'
 
 
-console.log("requisição bookmark");
+console.log("Robô acessível");
 
 const TIMELINE_REFRESH_SECONDS = 900;
 const STATUS_REFRESH_SECONDS = 360;
@@ -21,7 +21,7 @@ let lastTimeline: ITimeline;
 const timelinePersistence = TimelineFactory();
 const sentPostPersistence = SentPostFactory();
 
-const timelineRunner = new Runner(TIMELINE_REFRESH_SECONDS);
+const timelineRunner = new Runner(TIMELINE_REFRESH_SECONDS, 'Leitura Timeline');
 const timelineService = new TimelineMastodonService();
 const postsWithoutAcessibilty = new StackHelper(
   new Array<IPost>(),
@@ -117,7 +117,7 @@ sentPostPersistence.SavedData$.subscribe({
 
 
 // Status post processor
-const returnStatusRunner = new Runner(STATUS_REFRESH_SECONDS);
+const returnStatusRunner = new Runner(STATUS_REFRESH_SECONDS, 'Alerta Acessibilidade');
 returnStatusRunner.Init(() => {
   const postToReturn = postsWithoutAcessibilty.Top();
   if(postToReturn) {
@@ -144,6 +144,7 @@ combineLatest([
     sentPostsLoaded
   ]) => {
     console.log('carregada timeline e posts')
+    console.log('Robô iniciado, aguardando ciclo')
 
     lastTimeline = timelineLoaded;
     sentPostsLoaded.forEach(sentPost => {
