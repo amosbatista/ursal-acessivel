@@ -12,8 +12,9 @@ import 'dotenv/config'
 
 
 console.log("Robô acessível");
+console.log(`Chave ativação Mastodon: ${process.env.MASTODON_KEY}`);
 
-const TIMELINE_REFRESH_SECONDS = 900;
+const TIMELINE_REFRESH_SECONDS = 90;
 const STATUS_REFRESH_SECONDS = 360;
 
 let lastTimeline: ITimeline;
