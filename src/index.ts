@@ -27,7 +27,7 @@ const postsWithoutAcessibilty = new StackHelper(
   new Array<IPost>(),
   "Posts sem acessibilidade",
   console,
-  false
+  true
 );
 
 const usersAlreadyWarned = new StackHelper(
@@ -41,7 +41,7 @@ const sentStatusList = new StackHelper(
   new Array<IPost>(),
   "Posts com status enviado",
   console,
-  true
+  false
 );
 
 timelineService.timeline$.subscribe({
