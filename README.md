@@ -10,7 +10,8 @@ Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da 
     - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?scopes=read+write) e preencha os campos 1 e 3;
     - Cole o código gerado no link acima na variável `MASTODON_KEY` do arquivo `.env`;
     - Informe a URL da sua instância (sem `https://`) na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
-    - Defina o nome da sua instância na variável `INSTANCE_NAME`. Aparecerá na mensagem enviada ao usuário que não descrever mídias. Exemplo: `"Bolha.one"`;
+    - Defina o nome da sua instância na variável `INSTANCE_NAME`. Exemplo: `"Bolha.one"`;
+    - Na variável `DM_MSG` você define, dentro das aspas, a mensagem que será enviada aos usuários. Você pode incluir atalhos de `:emojis:` e também quebras de linha (`\\n`).
 - Rode o projeto como `npm run start`;
 - Aguarde o robô iniciar, o que pode levar até 3 minutos.
 
