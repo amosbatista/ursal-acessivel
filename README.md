@@ -7,7 +7,7 @@ Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da 
 - Execute `npm install` para baixar as dependências do projeto;
 - Copie o arquivo `.dev.env` e renomeie para `.env`;
 - Edite o arquivo `.env` informando o que se pede:
-    - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?scopes=read+write) e preencha os campos 1 e 3;
+    - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?client_name=Rob%C3%B4+Acess%C3%ADvel&scopes=read+write) e preencha o terceiro campo;
     - Cole o código gerado no link acima na variável `MASTODON_KEY` do arquivo `.env`;
     - Informe a URL da sua instância (sem `https://`) na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
     - Defina o nome da sua instância na variável `INSTANCE_NAME`. Exemplo: `"Bolha.one"`;
