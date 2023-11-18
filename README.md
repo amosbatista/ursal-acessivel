@@ -49,3 +49,7 @@ Muito obrigado por sua compreensão e apoio!
 O Robô Acessível foi [desenvolvido por Amós Batista](https://github.com/amosbatista/ursal-acessivel/) para a Ursal e posteriormente disponibilizado para uso geral por outros servidores. Este fork realiza algumas alterações como mais variáveis de ambiente para substituir os endereços *hardcoded* da Ursal que tinham antes.
 
 Também modifica a mensagem a ser enviada para os usuários que não adicionarem descrição nas mídias.
+
+## Licença
+
+Este software está sob a licença MIT. Vide arquivo `LICENSE` para conhecê-la na íntegra.
