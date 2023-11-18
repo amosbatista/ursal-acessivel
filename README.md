@@ -1,7 +1,8 @@
-# ursal-acessivel
-Robô para validar se usuários da URSAL estão sendo acessíveis
+# Robô Acessível
 
-## Como rodar:
+Robô para conscientizar usuários da instância sobre o respeito a acessibilidade.
+
+## Como utilizar
 
 1. Execute ```npm install``` para baixar as dependências do projeto;
 1. Copiar o arquivo .dev.end para o arquivo .env;
