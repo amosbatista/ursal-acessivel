@@ -26,7 +26,7 @@ DM_MSG="Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nRep
 
 Sobre a mensagem a ser enviada por menção direta, preste atenção nas variáveis caso altere o texto:
 
-- `@${post.user.userName}`: será substituído pelo nome de usuário da pessoa. Exemplo: `@usuario`;
+- `@${post.user.userName}`: será substituído pelo nome de usuário da pessoa. Exemplo: `@JohnMastodon`;
 - `${post.url}`: será substituído pelo endereço do toot sem descrição de mídias;
 - `${process.env.INSTANCE_NAME}`: será substituído pelo nome da instância que você definiu no `.env`.
 
