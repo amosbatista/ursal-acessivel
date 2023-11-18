@@ -7,10 +7,10 @@ Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da 
 - Execute `npm install` para baixar as dependências do projeto;
 - Copie o arquivo `.dev.env` e renomeie para `.env`;
 - Edite o arquivo `.env` informando o que se pede;
-- Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?scopes=read+write) e preencha os campos 1 e 3;
-- Cole o código gerado na variável `MASTODON_KEY` no arquivo `.env`;
-- Informe a URL da sua instância sem `https://` na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
-- Defina o nome da sua instância na variável `INSTANCE_NAME`. Ela será mostrada na mensagem enviada ao usuário que não descrever mídias. Exemplo: `"Bolha.one"`;
+    - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?scopes=read+write) e preencha os campos 1 e 3;
+    - Cole o código gerado na variável `MASTODON_KEY` no arquivo `.env`;
+    - Informe a URL da sua instância sem `https://` na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
+    - Defina o nome da sua instância na variável `INSTANCE_NAME`. Ela será mostrada na mensagem enviada ao usuário que não descrever mídias. Exemplo: `"Bolha.one"`;
 - Rode o projeto como `npm run start`;
 - Aguarde o robô iniciar, o que pode levar até 3 minutos.
 
@@ -30,6 +30,6 @@ Muito obrigado por sua compreensão e apoio!
 
 ## Créditos
 
-O Robô Acessível foi [desenvolvido por Amós Batista](https://github.com/amosbatista/ursal-acessivel/) para a Ursal e posteriormente disponibilizado para uso geral por outros servidores. Este repositório adiciona algumas alterações como mais variáveis de ambiente para substituir os endereços *hardcoded* da Ursal que tinham antes.
+O Robô Acessível foi [desenvolvido por Amós Batista](https://github.com/amosbatista/ursal-acessivel/) para a Ursal e posteriormente disponibilizado para uso geral por outros servidores. Este fork realiza algumas alterações como mais variáveis de ambiente para substituir os endereços *hardcoded* da Ursal que tinham antes.
 
 Também modifica a mensagem a ser enviada para os usuários que não adicionarem descrição nas mídias.
