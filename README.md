@@ -1,6 +1,6 @@
 # Robô Acessível
 
-Robô para conscientizar usuários da instância sobre o respeito a acessibilidade.
+Robô para conscientizar usuários da instância sobre o respeito à acessibilidade.
 
 ## Como utilizar
 
