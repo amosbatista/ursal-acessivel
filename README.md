@@ -55,7 +55,7 @@ Também modifica a mensagem a ser enviada para os usuários que não adicionarem
 Este software está sob a licença MIT.
 
 ```
- The MIT License (MIT)
+The MIT License (MIT)
 
 Copyright © 2023 Amós Batista
 
