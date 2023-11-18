@@ -9,11 +9,26 @@ Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da 
 - Edite o arquivo `.env` informando o que se pede:
     - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?client_name=Rob%C3%B4+Acess%C3%ADvel&scopes=read+write) e preencha o terceiro campo;
     - Cole o código gerado no link acima na variável `MASTODON_KEY` do arquivo `.env`;
-    - Informe a URL da sua instância (sem `https://`) na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
-    - Defina o nome da sua instância na variável `INSTANCE_NAME`. Exemplo: `"Bolha.one"`;
-    - Na variável `DM_MSG` você define, dentro das aspas, a mensagem que será enviada aos usuários. Você pode incluir atalhos de `:emojis:` e também quebras de linha (`\\n`).
-- Execute o projeto como `npm run start`;
-- Aguarde o robô iniciar, o que pode levar até 3 minutos.
+    - Informe, dentro das aspas, a URL da sua instância (sem `https://`) na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
+    - Defina, dentro das aspas, o nome da sua instância na variável `INSTANCE_NAME`. Exemplo: `"Bolha.one"`;
+    - Na variável `DM_MSG` você define, também dentro das aspas duplas, a mensagem que será enviada aos usuários notificados. Você pode incluir atalhos de `:emojis:` e também quebras de linha (`\\n`).
+- Execute o projeto com `npm run start`;
+- Aguarde o robô iniciar, o que pode levar até três minutos.
+
+Exemplo de arquivo `.env`:
+
+```
+MASTODON_KEY=3JZ68k2bjbIEBWzMfs8G0vfc7dJDSnhkSqrgs0n2vPddP5UIjmztOJTAbaQD8YT
+INSTANCE_URL="bolha.one"
+INSTANCE_NAME="Bolha.one"
+DM_MSG="Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nReparei que este post (${post.url}) tem uma imagem ou vídeo sem descrição. Como na ${process.env.INSTANCE_NAME} temos muito apreço por abrir as portas e incluir pessoas com deficiência visual, gostaria de reforçar com você este acordo de acessibilidade.\\n\\nPor favor, veja se é possível revisar e editar seu toot (via app ou web), adicionando descrição nas mídias.\\n\\nMuito obrigado por sua compreensão e apoio!"
+```
+
+Sobre a mensagem a ser enviada por menção direta, preste atenção nas variáveis caso altere o texto:
+
+- `@${post.user.userName}`: será substituído pelo nome de usuário da pessoa. Exemplo: `@usuario`;
+- `${post.url}`: será substituído pelo endereço do toot sem descrição de mídias;
+- `${process.env.INSTANCE_NAME}`: será substituído pelo nome da instância que você definiu no `.env`.
 
 A mensagem que o usuário da instância irá receber ficará assim, baseado nos exemplos acima:
 
