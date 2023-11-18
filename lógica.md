@@ -8,7 +8,7 @@
   - adicionar na fila
     - para cada minuto
       - extrair da fila e postar:
-        - "Olá, @usuário, como a acessibilidade é importante para a Ursal, estou alertando você de que este post não possui uma descrição de conteúdo. 
+        - "Olá, @usuário, como a acessibilidade é importante para a ${process.env.INSTANCE_NAME}, estou alertando você de que este post não possui uma descrição de conteúdo. 
         É possível você reescrever este conteúdo novamente? Se for, vou agradecer muito!"
 
 

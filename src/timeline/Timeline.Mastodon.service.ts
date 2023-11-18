@@ -14,7 +14,7 @@ class TimelineMastodonService {
   LoadTimeline = async (minId: string) => {
 
     try{
-      const urlSearch = `https://ursal.zone/api/v1/timelines/public?local=true&only_media=true&limit=40
+      const urlSearch = `https://${process.env.INSTANCE_URL}/api/v1/timelines/public?local=true&only_media=true&limit=40
       ${ minId != "0" ? `&min_id=${minId}` : '' } `;
 
       console.log("iniciando listagem timeline", urlSearch)

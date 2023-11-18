@@ -4,7 +4,7 @@
     {
       "id": "111365326053310818",
       "content": "<p>Que? :frogDrink:</p>",
-      "url": "https://ursal.zone/@kiff/111365326053310818",
+      "url": "https://${process.env.INSTANCE_URL}/@kiff/111365326053310818",
       "creationData": "2023-11-06T19:46:59.123Z",
       "user": {
         "id": "109308449063864793",
