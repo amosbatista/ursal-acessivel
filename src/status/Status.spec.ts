@@ -6,7 +6,7 @@ describe('Status test', () => {
     const post:IPost = {
       content: "foo",
       id: "1",
-      url: "https://ursal.zone/users/teste/statuses/123445",
+      url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445",
       user: {
         id: "1",
         userName: "foo"
@@ -16,13 +16,13 @@ describe('Status test', () => {
         id: "1",
         description: "",
         type: "",
-        url: "https://ursal.zone/users/teste/statuses/123445"
+        url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445"
       }]
     }
 
 
     const expected: IStatus = {
-      status: `Oie, @foo. Vi que este post (https://ursal.zone/users/teste/statuses/123445) tem uma imagem ou vídeo sem descrição.\nComo na Ursal temos muito apreço para abrir as portas para pessoas com deficiência, queria reforçar contigo este acordo de acessibilidade contigo.\nÉ possível você repostar o conteúdo deste seu toot, desta vez com descrição?\nMuito obrigado pela atenção e apoio.`
+      status: `${process.env.DM_MSG}`
     }
 
     expect(CreateStatusForNonAcessiblePost(post)).toEqual(expected);

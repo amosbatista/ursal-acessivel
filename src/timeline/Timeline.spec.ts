@@ -8,7 +8,7 @@ describe("timeline test", () => {
         content: "foo",
         creationData: '2023-02-17T19:47:15.598Z',
         id: "1",
-        url: "https://ursal.zone/users/teste/statuses/123445",
+        url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445",
         user: {
           id: "1",
           userName: "foo"
@@ -17,7 +17,7 @@ describe("timeline test", () => {
           id: "1",
           description: "",
           type: "",
-          url: "https://ursal.zone/users/teste/statuses/123445"
+          url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445"
         }]
       },{
         content: "foo",
@@ -53,7 +53,7 @@ describe("timeline test", () => {
         content: "bar",
         creationData: '2023-02-17T19:47:15.598Z',
         id: "4",
-        url: "https://ursal.zone/teste",
+        url: "https://${process.env.INSTANCE_URL}/teste",
         user: {
           id: "1",
           userName: "foo"
@@ -74,7 +74,7 @@ describe("timeline test", () => {
     expect(actual).toEqual([{
       content: "foo",
       id: "1",
-      url: "https://ursal.zone/users/teste/statuses/123445",
+      url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445",
       user: {
         id: "1",
         userName: "foo"
@@ -83,12 +83,12 @@ describe("timeline test", () => {
         id: "1",
         description: "",
         type: "",
-        url: "https://ursal.zone/users/teste/statuses/123445"
+        url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445"
       }]
     }, {
       content: "bar",
       id: "4",
-      url: "https://ursal.zone/teste",
+      url: "https://${process.env.INSTANCE_URL}/teste",
       user: {
         id: "1",
         userName: "foo"

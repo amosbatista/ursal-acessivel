@@ -13,7 +13,7 @@ describe("um teste básico", () => {
     const post:IPost = {
       content: "foo",
       id: "1",
-      url: "https://ursal.zone/users/teste/statuses/123445",
+      url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445",
       user: {
         id: "1",
         userName: "foo"
@@ -23,7 +23,7 @@ describe("um teste básico", () => {
         id: "1",
         description: "",
         type: "",
-        url: "https://ursal.zone/users/teste/statuses/123445"
+        url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445"
       }]
     }
 
@@ -35,7 +35,7 @@ describe("um teste básico", () => {
     const post:IPost = {
       content: "foo",
       id: "1",
-      url: "https://ursal.zone/users/teste/statuses/123445",
+      url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445",
       user: {
         id: "1",
         userName: "foo"
@@ -45,7 +45,7 @@ describe("um teste básico", () => {
         id: "1",
         description: "",
         type: "",
-        url: "https://ursal.zone/users/teste/statuses/123445"
+        url: "https://${process.env.INSTANCE_URL}/users/teste/statuses/123445"
       }]
     }
 
