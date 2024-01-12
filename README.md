@@ -44,6 +44,16 @@ Por favor, veja se é possível revisar e editar seu toot (via app ou web), adic
 Muito obrigado por sua compreensão e apoio!
 ```
 
+## Usando com o Docker
+
+Você pode rodar o Robô Acessível em um contêiner Docker usando os arquivos `Dockerfile` e `docker-compose.yml` adicionados ao repositório. Gere a imagem com o arquivo `Dockerfile` e em seguida edite o arquivo `docker-compose.yml` para incluir os mesmos dados que você adicionaria no arquivo `.env`.
+
+Para gerar uma imagem do Docker, use o comando:
+
+```
+docker build -t acessivel:latest .
+```
+
 ## Créditos
 
 O Robô Acessível foi [desenvolvido por Amós Batista](https://github.com/amosbatista/ursal-acessivel/) para a Ursal e posteriormente disponibilizado para uso geral por outros servidores. Este fork realiza algumas alterações como mais variáveis de ambiente para substituir os endereços *hardcoded* da Ursal que tinham antes.
