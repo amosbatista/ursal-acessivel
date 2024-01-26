@@ -1,7 +1,28 @@
 # Robô Acessível
 
-Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da instância sobre o respeito à acessibilidade.
+_Social buttons_
 
+[![amosbatista - ursal-acessivel](https://img.shields.io/static/v1?label=amosbatista&message=ursal-acessivel&color=red&logo=github)](https://github.com/amosbatista/ursal-acessivel "Go to GitHub repo")
+[![stars - ursal-acessivel](https://img.shields.io/github/stars/amosbatista/ursal-acessivel?style=social)](https://github.com/amosbatista/ursal-acessivel)
+[![forks - ursal-acessivel](https://img.shields.io/github/forks/amosbatista/ursal-acessivel?style=social)](https://github.com/amosbatista/ursal-acessivel)
+
+
+_Repo metadata_
+
+[![GitHub tag](https://img.shields.io/github/tag/amosbatista/ursal-acessivel?include_prereleases=&sort=semver&color=red)](https://github.com/amosbatista/ursal-acessivel/releases/)
+[![License](https://img.shields.io/badge/License-MIT-red)](#license)
+[![issues - ursal-acessivel](https://img.shields.io/github/issues/amosbatista/ursal-acessivel)](https://github.com/amosbatista/ursal-acessivel/issues)
+
+## Documentation
+
+<div align="center">
+[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](/docs/ "Go to project documentation")
+</div>
+
+## License
+Released under [MIT](/LICENSE) by [@amosbatista](https://github.com/amosbatista).
+
+Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da instância sobre o respeito à acessibilidade.
 ## Como usar
 
 - Execute `npm install` para baixar as dependências do projeto;
