@@ -19,7 +19,7 @@ class Timeline {
       return (post.media.find(media => {
         return media.description == "" || media.description == null
       })
-      ) && (post.url.search(/\/ursal.zone\//g) > 0)
+      ) && (post.url.search(process.env.INSTANCE_URL || '') > 0)
     })
   }
 }

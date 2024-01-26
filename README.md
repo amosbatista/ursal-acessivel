@@ -13,6 +13,8 @@ _Repo metadata_
 [![License](https://img.shields.io/badge/License-MIT-red)](#license)
 [![issues - ursal-acessivel](https://img.shields.io/github/issues/amosbatista/ursal-acessivel)](https://github.com/amosbatista/ursal-acessivel/issues)
 
+[![coverage - 72,34%](https://img.shields.io/static/v1?label=coverage&message=72%2C34%&color=2ea44f)](https://)
+
 ## Documentation
 
 <div align="center">
