@@ -10,11 +10,14 @@ import {  CreateStatusForNonAcessiblePost } from "./status/Status";
 import { combineLatest } from 'rxjs';
 import 'dotenv/config'
 
+const statusServiceForGeneralLog = new StatusService();
 
-// console.log("Robô acessível");
-// console.log(`Chave ativação Mastodon: ${process.env.MASTODON_KEY}`);
+statusServiceForGeneralLog.Post({
+  status: 'Robô acessível foi reiniciado e iniciará as análises de post em breve.',
+  visibility: 'public'
+});
 
-const TIMELINE_REFRESH_SECONDS = 1;
+const TIMELINE_REFRESH_SECONDS = 90;
 const STATUS_REFRESH_SECONDS = 360;
 
 let lastTimeline: ITimeline;
@@ -52,7 +55,10 @@ timelineService.timeline$.subscribe({
     timelineRunner.FreeToAnotherRun();
 
     if(timelinePosts.error)  {
-      // console.log(timelinePosts.error.message, timelinePosts.error.objectError);
+      statusServiceForGeneralLog.Post({
+        status: `${timelinePosts.error.message}: ${timelinePosts.error.objectError}`,
+        visibility: 'public'
+      });
     }
     else {
       if(timelinePosts.timeline) {
@@ -65,6 +71,10 @@ timelineService.timeline$.subscribe({
         const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
 
         if(getPostsWithoutAcessibility.length <= 0) {
+          statusServiceForGeneralLog.Post({
+            status: `Não há toots com problemas no momento.`,
+            visibility: 'private'
+          });
           // console.log("Não há toots com problemas")
         }
 
@@ -92,11 +102,13 @@ const statusService = new StatusService();
 statusService.Status$.subscribe({
   next: (post: IPost) => {
     returnStatusRunner.FreeToAnotherRun()
-    // console.log('Post criado para o usuário ', post.user.userName)
   },
   error: (err) => {
     returnStatusRunner.FreeToAnotherRun()
-    // console.log('Erro ao postar status: ', err)
+    statusServiceForGeneralLog.Post({
+      status: `Erro ao postar alerta de acessibilidade: ${err}`,
+      visibility: 'public'
+    });
   },
 })
 
@@ -105,11 +117,19 @@ statusService.Status$.subscribe({
 timelinePersistence.SavedData$.subscribe({
   next: () => {
     // console.log("Timeline atualizada");
+    statusServiceForGeneralLog.Post({
+      status: `Timeline atualizada`,
+      visibility: 'private'
+    });
   }
 });
 
 sentPostPersistence.SavedData$.subscribe({
   next: () => {
+    statusServiceForGeneralLog.Post({
+      status: `Lista de posts a serem enviadas atualizada com novos itens`,
+      visibility: 'private'
+    });
     // console.log("Lista de posts a serem enviadas atualizada");
   }
 });
@@ -127,6 +147,10 @@ returnStatusRunner.Init(() => {
     statusService.Post(status);
   }
   else {
+    statusServiceForGeneralLog.Post({
+      status: `Lista de retorno vazia`,
+      visibility: 'private'
+    });
     // console.log("lista de retorno vazia")
     returnStatusRunner.FreeToAnotherRun()
   }
@@ -144,8 +168,10 @@ combineLatest([
     timelineLoaded,
     sentPostsLoaded
   ]) => {
-    // console.log('carregada timeline e posts')
-    // console.log('Robô iniciado, aguardando ciclo')
+    statusServiceForGeneralLog.Post({
+      status: `Posts já disparados e timeline carregados. Iniciando processamento`,
+      visibility: 'public'
+    });
 
     lastTimeline = timelineLoaded;
     sentPostsLoaded.forEach(sentPost => {
