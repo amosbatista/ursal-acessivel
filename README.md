@@ -15,12 +15,6 @@ _Repo metadata_
 
 [![coverage - 72,34%](https://img.shields.io/static/v1?label=coverage&message=72%2C34%&color=2ea44f)](https://)
 
-## Documentation
-
-<div align="center">
-[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](/docs/ "Go to project documentation")
-</div>
-
 ## License
 Released under [MIT](/LICENSE) by [@amosbatista](https://github.com/amosbatista).
 

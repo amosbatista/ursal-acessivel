@@ -17,7 +17,7 @@ class TimelineMastodonService {
       const urlSearch = `https://${process.env.INSTANCE_URL}/api/v1/timelines/public?local=true&only_media=true&limit=40
       ${ minId != "0" ? `&min_id=${minId}` : '' } `;
 
-      console.log("iniciando listagem timeline", urlSearch)
+      // console.log("iniciando listagem timeline", urlSearch)
 
       await axios.get(urlSearch, {
         headers: {
@@ -26,7 +26,7 @@ class TimelineMastodonService {
       }).then(response => {
         const lastPost = response.data.length - 1;
         if(!response.data[lastPost]) {
-          console.log('Obj response com problemas', response);
+          // console.log('Obj response com problemas', response);
         }
         const timeline:ITimeline = {
           minId: response.data[lastPost].id, 

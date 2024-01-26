@@ -5,14 +5,15 @@ import { Post, IPost } from "../posts/Post";
 
 class StatusService {
 
+    LIMIT_STATUS_CHARACTER = 500;
     Status$ = new Subject<IPost>();
 
     async Post(status: IStatus) {
       try{
-        console.log("disparando status")
-        await axios.post('https://${process.env.INSTANCE_URL}/api/v1/statuses', 
-          {...status,
-            visibility: 'direct'
+        await axios.post(`https://${process.env.INSTANCE_URL}/api/v1/statuses`, 
+          {
+            ...status,
+            status: status.status.substring(0, this.LIMIT_STATUS_CHARACTER)
           }, {
             headers: {
               Authorization: `Bearer ${process.env.MASTODON_KEY}`,
