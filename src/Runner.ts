@@ -9,7 +9,7 @@ class Runner {
   }
 
   Init(toExecute:any ) {
-    console.log(`Iniciando novo processamento de Runner sob Nome ${this.runnerName} em ${this.secondsToAnother} segundos.` )
+    // console.log(`Iniciando novo processamento de Runner sob Nome ${this.runnerName} em ${this.secondsToAnother} segundos.` )
     this.interval = setInterval(() => {
       if(this.canRunAnotherProcess == true){
         this.canRunAnotherProcess = false;

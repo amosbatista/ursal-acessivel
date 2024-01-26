@@ -11,10 +11,10 @@ import { combineLatest } from 'rxjs';
 import 'dotenv/config'
 
 
-console.log("Robô acessível");
-console.log(`Chave ativação Mastodon: ${process.env.MASTODON_KEY}`);
+// console.log("Robô acessível");
+// console.log(`Chave ativação Mastodon: ${process.env.MASTODON_KEY}`);
 
-const TIMELINE_REFRESH_SECONDS = 90;
+const TIMELINE_REFRESH_SECONDS = 1;
 const STATUS_REFRESH_SECONDS = 360;
 
 let lastTimeline: ITimeline;
@@ -28,14 +28,14 @@ const postsWithoutAcessibilty = new StackHelper(
   new Array<IPost>(),
   "Posts sem acessibilidade",
   console,
-  true
+  false
 );
 
 const usersAlreadyWarned = new StackHelper(
   new Array<IUser>(),
   "Usuários já acionados",
   console,
-  true
+  false
 );
 
 const sentStatusList = new StackHelper(
@@ -52,7 +52,7 @@ timelineService.timeline$.subscribe({
     timelineRunner.FreeToAnotherRun();
 
     if(timelinePosts.error)  {
-      console.log(timelinePosts.error.message, timelinePosts.error.objectError);
+      // console.log(timelinePosts.error.message, timelinePosts.error.objectError);
     }
     else {
       if(timelinePosts.timeline) {
@@ -65,7 +65,7 @@ timelineService.timeline$.subscribe({
         const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
 
         if(getPostsWithoutAcessibility.length <= 0) {
-          console.log("Não há toots com problemas")
+          // console.log("Não há toots com problemas")
         }
 
         getPostsWithoutAcessibility.forEach(post => {
@@ -92,11 +92,11 @@ const statusService = new StatusService();
 statusService.Status$.subscribe({
   next: (post: IPost) => {
     returnStatusRunner.FreeToAnotherRun()
-    console.log('Post criado para o usuário ', post.user.userName)
+    // console.log('Post criado para o usuário ', post.user.userName)
   },
   error: (err) => {
     returnStatusRunner.FreeToAnotherRun()
-    console.log('Erro ao postar status: ', err)
+    // console.log('Erro ao postar status: ', err)
   },
 })
 
@@ -104,13 +104,13 @@ statusService.Status$.subscribe({
 
 timelinePersistence.SavedData$.subscribe({
   next: () => {
-    console.log("Timeline atualizada");
+    // console.log("Timeline atualizada");
   }
 });
 
 sentPostPersistence.SavedData$.subscribe({
   next: () => {
-    console.log("Lista de posts a serem enviadas atualizada");
+    // console.log("Lista de posts a serem enviadas atualizada");
   }
 });
 
@@ -127,7 +127,7 @@ returnStatusRunner.Init(() => {
     statusService.Post(status);
   }
   else {
-    console.log("lista de retorno vazia")
+    // console.log("lista de retorno vazia")
     returnStatusRunner.FreeToAnotherRun()
   }
 });
@@ -144,8 +144,8 @@ combineLatest([
     timelineLoaded,
     sentPostsLoaded
   ]) => {
-    console.log('carregada timeline e posts')
-    console.log('Robô iniciado, aguardando ciclo')
+    // console.log('carregada timeline e posts')
+    // console.log('Robô iniciado, aguardando ciclo')
 
     lastTimeline = timelineLoaded;
     sentPostsLoaded.forEach(sentPost => {

@@ -9,8 +9,7 @@ class StatusService {
 
     async Post(status: IStatus) {
       try{
-        console.log("disparando status")
-        await axios.post('https://${process.env.INSTANCE_URL}/api/v1/statuses', 
+        await axios.post(`https://${process.env.INSTANCE_URL}/api/v1/statuses`, 
           {...status,
             visibility: 'direct'
           }, {
