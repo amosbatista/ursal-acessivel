@@ -61,6 +61,25 @@ Por favor, veja se é possível revisar e editar seu toot (via app ou web), adic
 Muito obrigado por sua compreensão e apoio!
 ```
 
+## Usando com o Docker
+
+Você dockerizar a execução do bot. Para isso, use a imagem `acessivel:latest` de nosso repositório.
+
+``` bash
+docker run -d \
+    -e PYTHONUNBUFFERED=true \
+    -e MASTODON_KEY=3JZ68k2bjbIEBWzMfs8G0vfc7dJDSnhkSqrgs0n2vPddP5UIjmztOJTAbaQD8YT \
+    -e INSTANCE_URL=botsin.space \
+    -e INSTANCE_NAME=Bolha.one \
+    -e DM_MSG="Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nReparei que este post (${post.url}) tem uma imagem ou vídeo sem descrição. Como na ${process.env.INSTANCE_NAME} temos muito apreço por abrir as portas e incluir pessoas com deficiência visual, gostaria de reforçar com você este acordo de acessibilidade.\\n\\nPor favor, veja se é possível revisar e editar seu toot (via app ou web), adicionando descrição nas mídias.\\n\\nMuito obrigado por sua compreensão e apoio!" \
+    -e TZ=America/Recife \
+    --name mastofm \
+    --restart unless-stopped \
+    code.bolha.one/bolha/acessivel:latest
+```
+
+Informe as variáveis de ambiente `MASTODON_KEY`, `INSTANCE_URL`, `INSTANCE_NAME` e `DM_MSG` como você faria no arquivo `.env`. Se preferir, edite e use o arquivo `docker-compose.yml` com o Portainer Stacks ou o `docker-compose up -d`.
+
 ## Créditos
 
 O Robô Acessível foi [desenvolvido por Amós Batista](https://github.com/amosbatista/ursal-acessivel/) para a Ursal e posteriormente disponibilizado para uso geral por outros servidores. Este fork realiza algumas alterações como mais variáveis de ambiente para substituir os endereços *hardcoded* da Ursal que tinham antes.
