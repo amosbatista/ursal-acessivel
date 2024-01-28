@@ -17,8 +17,8 @@ statusServiceForGeneralLog.Post({
   visibility: 'public'
 });
 
-const TIMELINE_REFRESH_SECONDS = 90;
-const STATUS_REFRESH_SECONDS = 360;
+const TIMELINE_REFRESH_SECONDS = 60 * 4;
+const STATUS_REFRESH_SECONDS = 60 * 30;
 
 let lastTimeline: ITimeline;
 
@@ -71,10 +71,10 @@ timelineService.timeline$.subscribe({
         const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
 
         if(getPostsWithoutAcessibility.length <= 0) {
-          statusServiceForGeneralLog.Post({
+          /*statusServiceForGeneralLog.Post({
             status: `Não há toots com problemas no momento.`,
-            visibility: 'private'
-          });
+            visibility: 'direct'
+          });*/
           // console.log("Não há toots com problemas")
         }
 
@@ -107,7 +107,7 @@ statusService.Status$.subscribe({
     returnStatusRunner.FreeToAnotherRun()
     statusServiceForGeneralLog.Post({
       status: `Erro ao postar alerta de acessibilidade: ${err}`,
-      visibility: 'public'
+      visibility: 'direct'
     });
   },
 })
@@ -117,10 +117,10 @@ statusService.Status$.subscribe({
 timelinePersistence.SavedData$.subscribe({
   next: () => {
     // console.log("Timeline atualizada");
-    statusServiceForGeneralLog.Post({
+    /*statusServiceForGeneralLog.Post({
       status: `Timeline atualizada`,
-      visibility: 'private'
-    });
+      visibility: 'direct'
+    });*/
   }
 });
 
@@ -128,7 +128,7 @@ sentPostPersistence.SavedData$.subscribe({
   next: () => {
     statusServiceForGeneralLog.Post({
       status: `Lista de posts a serem enviadas atualizada com novos itens`,
-      visibility: 'private'
+      visibility: 'direct'
     });
     // console.log("Lista de posts a serem enviadas atualizada");
   }
@@ -149,7 +149,7 @@ returnStatusRunner.Init(() => {
   else {
     statusServiceForGeneralLog.Post({
       status: `Lista de retorno vazia`,
-      visibility: 'private'
+      visibility: 'direct'
     });
     // console.log("lista de retorno vazia")
     returnStatusRunner.FreeToAnotherRun()
