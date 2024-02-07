@@ -1,5 +1,5 @@
 import { TimelineMastodonService  } from "./timeline/Timeline.Mastodon.service";
-import { Timeline, ITimeline} from "./timeline/Timeline";
+import { Timeline, ITimeline} from "./timeline/Timeline.helpers";
 import { TimelineFactory, SentPostFactory } from "./persistence/PersistenseFactory";
 import { Runner } from "./Runner";
 import { IPost } from "./posts/Post";
@@ -173,8 +173,8 @@ combineLatest([
       visibility: 'public'
     });
 
-    lastTimeline = timelineLoaded;
-    sentPostsLoaded.forEach(sentPost => {
+    lastTimeline = timelineLoaded.content as unknown as ITimeline;
+    sentPostsLoaded.content?.forEach(sentPost => {
       sentStatusList.Add(sentPost);
     });
 

@@ -1,4 +1,5 @@
-import { ITimeline } from "./Timeline";
+import { IPersistence } from "../persistence/IPersistence";
+import { ITimeline } from "./Timeline.helpers";
 import { TimelinePersistence } from "./Timeline.persistence"
 
 describe('Timeline Persistence test', () => {
@@ -22,7 +23,7 @@ describe('Timeline Persistence test', () => {
     }
 
     persistence.LoadedData$.subscribe({
-      next: ((actualTimeline:ITimeline) => {
+      next: ((actualTimeline:IPersistence<ITimeline>) => {
         expect(actualTimeline).toEqual(timelineExpected);
       }),
     });
@@ -41,8 +42,13 @@ describe('Timeline Persistence test', () => {
     }
 
     persistence.SavedData$.subscribe({
-      next: ((result: boolean) => {
-        expect(result).toBeTruthy();
+      next: ((result: IPersistence<ITimeline>) => {
+        expect(result).toEqual({
+          content: {
+            posts: [],
+            minId: '34354655'
+          }
+        } as IPersistence<ITimeline>);
       }),
     });
 

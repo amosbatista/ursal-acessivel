@@ -1,15 +1,16 @@
 import { Subject } from 'rxjs';
-import { ITimeline } from './Timeline';
+import { ITimeline } from './Timeline.helpers';
 import { Post } from '../posts/Post';
 import axios from 'axios';
 import { IError } from '../IError';
 
+interface ITimelineService { 
+  timeline: ITimeline | null ,
+  error: IError | null
+}
 class TimelineMastodonService {
 
-  timeline$ = new Subject<{ 
-    timeline: ITimeline | null ,
-    error: IError | null
-  }>();
+  timeline$ = new Subject<ITimelineService>();
 
   LoadTimeline = async (minId: string) => {
 
@@ -26,7 +27,15 @@ class TimelineMastodonService {
       }).then(response => {
         const lastPost = response.data.length - 1;
         if(!response.data[lastPost]) {
-          // console.log('Obj response com problemas', response);
+          this.timeline$.next({
+            error: {
+              message: 'timeline vazia',
+              objectError: null
+            },
+            timeline: null
+          });
+
+          return;
         }
         const timeline:ITimeline = {
           minId: response.data[lastPost].id, 
@@ -84,4 +93,4 @@ class TimelineMastodonService {
   }
 }
 
-export { TimelineMastodonService }
+export { TimelineMastodonService, ITimelineService }

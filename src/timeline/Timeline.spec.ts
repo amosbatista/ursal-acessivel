@@ -1,4 +1,4 @@
-import { Timeline, ITimeline } from './Timeline';
+import { Timeline, ITimeline } from './Timeline.helpers';
 
 describe("timeline test", () => {
 
