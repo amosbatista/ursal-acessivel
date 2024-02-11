@@ -10,6 +10,9 @@ import { Timeline } from "./Timeline.helpers";
 import { IPost } from "../posts/Post";
 
 export class TimelineWorker extends Worker<ITimeline, IPost[]> {
+  Action(content: IWorker<ITimeline>): void {
+    throw new Error("Method not implemented.");
+  }
   timeline: ITimeline = {
     minId: '0',
     posts: []
@@ -85,9 +88,6 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
       this.persistence.LoadData();  
     }))
   }
-  Action(objectData: ITimeline): void {
-    objectData;
-  };
   SubscribeService() {
     this.service.timeline$.subscribe((timelineResult: ITimelineService) => {
     
