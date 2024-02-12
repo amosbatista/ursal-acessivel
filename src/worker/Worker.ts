@@ -7,12 +7,13 @@ export abstract class Worker<EntryType, ReturnType> {
   WorkerEvent$ = new Subject<IWorker<ReturnType>>();
   protected executable: any;
   runner: Runner | undefined;
-  protected timelineRefreshSeconds: number = 10;
 
   abstract Load(): Observable<IWorker<EntryType>>;
-  abstract Action(objectData: EntryType): void;
+  abstract Action(content: IWorker<EntryType>): void;
 
-  constructor() {
+  constructor(
+    private timelineRefreshSeconds: number = 60
+  ) {
     this.runner = new Runner(this.timelineRefreshSeconds);
   }
 
