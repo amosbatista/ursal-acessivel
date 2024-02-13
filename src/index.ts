@@ -1,205 +1,116 @@
-import { TimelineMastodonService  } from "./timeline/Timeline.Mastodon.service";
-import { Timeline, ITimeline} from "./timeline/Timeline";
-import { TimelineFactory, SentPostFactory } from "./persistence/PersistenseFactory";
-import { Runner } from "./Runner";
-import { IPost } from "./posts/Post";
-import { IUser } from './users/User'
-import StackHelper from "./Stack";
-import { StatusService } from "./status/Status.service";
-import {  CreateStatusForNonAcessiblePost } from "./status/Status";
-import { combineLatest } from 'rxjs';
+import { ActivityWorker } from "./activity/Activity.worker";
+import { AcessibilityStatusWorker } from "./status/AcessibilityStatus.worker";
+import { TimelineWorker } from "./timeline/TImeline.worker";
+import { Observable, combineLatest, of, pipe, switchMap, throwError } from 'rxjs';
 import 'dotenv/config'
+import { IWorker } from "./worker/IWorker";
 
-const statusServiceForGeneralLog = new StatusService();
+const TIMELINE_REFRESH_SECONDS = 60 * 10;
+const SEND_POST_REFRESH_SECONDS = 60 * 3;
 
-statusServiceForGeneralLog.Post({
-  status: 'Robô acessível foi reiniciado e iniciará as análises de post em breve.',
-  visibility: 'public'
-});
-
-const TIMELINE_REFRESH_SECONDS = 60 * 4;
-const STATUS_REFRESH_SECONDS = 60 * 30;
-
-let lastTimeline: ITimeline;
-
-const timelinePersistence = TimelineFactory();
-const sentPostPersistence = SentPostFactory();
-
-const timelineRunner = new Runner(TIMELINE_REFRESH_SECONDS, 'Leitura Timeline');
-const timelineService = new TimelineMastodonService();
-const postsWithoutAcessibilty = new StackHelper(
-  new Array<IPost>(),
-  "Posts sem acessibilidade",
-  console,
-  false
+const timelineWorker = new TimelineWorker(undefined, undefined, TIMELINE_REFRESH_SECONDS)
+const acessibilityWorker = new AcessibilityStatusWorker(undefined, undefined, SEND_POST_REFRESH_SECONDS);
+const activityWorker = new ActivityWorker(
+  undefined, 
+  undefined, 
+  (Number.parseInt(process.env.REFRESH_TIME_ACTIVITY_HOURS || '12') * 60 * 60)
 );
 
-const usersAlreadyWarned = new StackHelper(
-  new Array<IUser>(),
-  "Usuários já acionados",
-  console,
-  false
-);
+console.log('Ursal Acessível - Inicializando.');
 
-const sentStatusList = new StackHelper(
-  new Array<IPost>(),
-  "Posts com status enviado",
-  console,
-  false
-);
 
-timelineService.timeline$.subscribe({
+timelineWorker.Load().pipe(
 
-  next: (timelinePosts ) => {
-
-    timelineRunner.FreeToAnotherRun();
-
-    if(timelinePosts.error)  {
-      statusServiceForGeneralLog.Post({
-        status: `${timelinePosts.error.message}: ${timelinePosts.error.objectError}`,
-        visibility: 'public'
-      });
+  switchMap((timelineLoaded) => {
+    if (isErrorAtLoaded(timelineLoaded)) { 
+      return throwError(() => (new Error()));
     }
-    else {
-      if(timelinePosts.timeline) {
+    return acessibilityWorker.Load();
+  }),
 
-      
-        lastTimeline = timelinePosts.timeline;
-        timelinePersistence.SaveData(timelinePosts.timeline);
-        
-        const timeline = new Timeline(timelinePosts.timeline);
-        const getPostsWithoutAcessibility = timeline.GetLocalPostswithoutDescription();
+  switchMap((acessibilityLoaded) => {
+    if (isErrorAtLoaded(acessibilityLoaded)) { 
+      return throwError(() => (new Error()));
+    }
+    return activityWorker.Load()}),
 
-        if(getPostsWithoutAcessibility.length <= 0) {
-          /*statusServiceForGeneralLog.Post({
-            status: `Não há toots com problemas no momento.`,
-            visibility: 'direct'
-          });*/
-          // console.log("Não há toots com problemas")
-        }
-
-        getPostsWithoutAcessibility.forEach(post => {
-          if(shouldPostSendToReturnList(post, usersAlreadyWarned.Get())) {
-
-            if(!sentStatusList.Get().find( (sentStatus: IPost) => {
-              return sentStatus.id == post.id
-            } )){
-              sentStatusList.Add(post);
-              postsWithoutAcessibilty.Add(post)
-            }
-          }
-        })
-
-        sentPostPersistence.SaveData(sentStatusList.Get());
+  switchMap((activityLoaded) => {
+      if (isErrorAtLoaded(activityLoaded)) { 
+        return throwError(() => (new Error()));
       }
-    }
-  }
-})
+      return of(true)}),
 
-
-const statusService = new StatusService();
-
-statusService.Status$.subscribe({
-  next: (post: IPost) => {
-    returnStatusRunner.FreeToAnotherRun()
-  },
-  error: (err) => {
-    returnStatusRunner.FreeToAnotherRun()
-    statusServiceForGeneralLog.Post({
-      status: `Erro ao postar alerta de acessibilidade: ${err}`,
-      visibility: 'direct'
-    });
-  },
-})
-
-
-
-timelinePersistence.SavedData$.subscribe({
+).subscribe({
   next: () => {
-    // console.log("Timeline atualizada");
-    /*statusServiceForGeneralLog.Post({
-      status: `Timeline atualizada`,
-      visibility: 'direct'
-    });*/
-  }
-});
 
-sentPostPersistence.SavedData$.subscribe({
-  next: () => {
-    statusServiceForGeneralLog.Post({
-      status: `Lista de posts a serem enviadas atualizada com novos itens`,
-      visibility: 'direct'
-    });
-    // console.log("Lista de posts a serem enviadas atualizada");
-  }
-});
+    console.log('Ursal Acessível - Checagem e carregamento finalizado. Configurando processamento...');
+    setProcess();
 
-
-
-
-// Status post processor
-const returnStatusRunner = new Runner(STATUS_REFRESH_SECONDS, 'Alerta Acessibilidade');
-returnStatusRunner.Init(() => {
-  const postToReturn = postsWithoutAcessibilty.Top();
-  if(postToReturn) {
-    const status = CreateStatusForNonAcessiblePost(postToReturn);
-
-    statusService.Post(status);
-  }
-  else {
-    statusServiceForGeneralLog.Post({
-      status: `Lista de retorno vazia`,
-      visibility: 'direct'
-    });
-    // console.log("lista de retorno vazia")
-    returnStatusRunner.FreeToAnotherRun()
-  }
-});
-
-
-
-
-//  Timeline processor
-combineLatest([
-  timelinePersistence.LoadedData$,
-  sentPostPersistence.LoadedData$
-]).subscribe({
-  next: ([
-    timelineLoaded,
-    sentPostsLoaded
-  ]) => {
-    statusServiceForGeneralLog.Post({
-      status: `Posts já disparados e timeline carregados. Iniciando processamento`,
-      visibility: 'public'
-    });
-
-    lastTimeline = timelineLoaded;
-    sentPostsLoaded.forEach(sentPost => {
-      sentStatusList.Add(sentPost);
-    });
-
-    timelineRunner.Init(() => {
-      timelineService.LoadTimeline(lastTimeline.minId) 
-    });
+    console.log('Ursal Acessível - Inicializando...');
+    initWorkers();
   }
 })
 
-timelinePersistence.LoadData();
-sentPostPersistence.LoadData();
 
-const shouldPostSendToReturnList = (
-  post: IPost,
-  usersAlreadyWarned: IUser[],
-  ):boolean => {
-    
-  return  usersAlreadyWarned.find(user => {
-    return user.id == post.user.id
-  }) ? false : true;
+const isErrorAtLoaded = (loaded: any): boolean => {
+  if (loaded.error) {
+    console.log(loaded.error.message, loaded.error.data)
 
+    return true;
+  }
+
+  return false;
 }
 
+const setProcess = () => {
+  timelineWorker.WorkerEvent$.subscribe({
+    next: (timelineResult) => {
 
+      if(timelineResult.description === timelineWorker.TIMELINE_READ_ERROR) {
+        activityWorker.Action({
+          description: activityWorker.ACTION_TIMELINE_READ_ERROR
+        });
 
-export {shouldPostSendToReturnList}
+        return;
+      }
 
+      if(timelineResult.description === timelineWorker.POST_EMIT_DESCRIPTION) {
+        acessibilityWorker.Action({
+          description: acessibilityWorker.ACTION_STACK_NEW_POSTS,
+          value: timelineResult.value
+        });
 
+        return;
+      }
+    }
+  });
+
+  acessibilityWorker.WorkerEvent$.subscribe({
+    next: (acessibilityResult) => {
+
+      if(acessibilityResult.description === acessibilityWorker.EVENT_POST_SENT_ERROR) {
+        activityWorker.Action({
+          description: activityWorker.ACTION_SEND_POST_ERROR
+        });
+
+        return;
+      }
+
+      if(acessibilityResult.description === acessibilityWorker.EVENT_ACESSIBILIT_POST_SENT) {
+        activityWorker.Action({
+          description: activityWorker.ACTION_NEW_ACESSIBILITY_POST
+        });
+
+        return;
+      }
+    }});
+}
+
+const initWorkers = () => {
+  timelineWorker.SetExecutable();
+  timelineWorker.Init();
+  acessibilityWorker.SetExecutable();
+  acessibilityWorker.Init();
+  activityWorker.SetExecutable();
+  acessibilityWorker.Init();
+}

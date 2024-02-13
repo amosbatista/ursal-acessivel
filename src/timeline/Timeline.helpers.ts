@@ -1,12 +1,7 @@
 import { 
   IPost,
 } from "../posts/Post"
-
-interface ITimeline {
-  posts: IPost[],
-  minId: string
-}
-
+import { ITimeline } from "./ITimeline"
 
 class Timeline {
 

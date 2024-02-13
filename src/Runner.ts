@@ -4,7 +4,7 @@ class Runner {
 
   constructor(
     private secondsToAnother: number,
-    private runnerName: string) {
+    private runnerName?: string) {
     this.canRunAnotherProcess = true;
   }
 

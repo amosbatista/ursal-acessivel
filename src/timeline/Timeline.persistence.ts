@@ -1,4 +1,4 @@
-import { ITimeline } from "./Timeline";
+import { ITimeline } from "./Timeline.helpers";
 import { Persistence } from "../persistence/Persistence";
 
 class TimelinePersistence extends Persistence<ITimeline> {
