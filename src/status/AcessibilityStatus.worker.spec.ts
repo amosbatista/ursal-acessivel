@@ -462,17 +462,17 @@ describe('AcessibilityStatus worker', () => {
       });
       const worker = new AcessibilityStatusWorker(persistenceFactory(), serviceFactory());
 
+      worker.SendPost(post_to_send);
       expectObservable(worker.WorkerEvent$).toBe('---e', {
         e: {
           description: worker.EVENT_ACESSIBILIT_POST_SENT,
           value: post_to_send
         } as IWorker<IPost>
-      })
-      worker.SendPost(post_to_send);
+      });
 
       testScheduler.flush();
 
-      expect(savePostMock).toBeCalledWith(post_to_send)
+      expect(savePostMock).toBeCalledWith([post_to_send])
     });
   
   });
@@ -585,106 +585,5 @@ describe('AcessibilityStatus worker', () => {
 
     });
   })
-
-  it.skip('deve iniciar o worker, receber ações e ir processando a lista em decorrer do tempo', () => {
-    testScheduler.run((helpers) => {
-      const { cold, expectObservable, hot } = helpers;
-      
-      // Inciializando worker
-      const loaded: IPersistence<IPost[]> = {
-        content: post_list_full
-      };
-
-      const SaveDataMock = jest.fn();
-      const Saved$Mock = hot('^---s---h', {
-        s: {
-          content: post_list_full
-        } as IPersistence<IPost[]>
-      })
-
-      const persistenceFactory = () => ({
-        LoadedData$: cold('--a|', {
-          a: loaded
-        }),
-        LoadData: jest.fn(),
-        SaveData: SaveDataMock,
-        SavedData$: Saved$Mock
-      });
-
-      
-      // Serviço de Mastodom
-      const Sent$Mock = hot('^---o---p', {
-        o: {
-          content: post_to_send
-        } as IStatusResult,
-        p: {
-          content: post_to_send
-        } as IStatusResult
-      });
-      const PostMock = () => (Sent$Mock);
-      const serviceFactory = () => ({
-        Post: PostMock,
-      });
-
-      // Instanciando
-      const worker = new AcessibilityStatusWorker(persistenceFactory(), serviceFactory());
-
-      expectObservable(worker.Load()).toBe('--a', {
-        a: loaded
-      });
-
-      testScheduler.flush();
-
-      // Recebendo uma nova lista de posts
-      const newList1 = post_list_full_test1
-      worker.Action({
-        description: worker.ACTION_STACK_NEW_POSTS,
-        value: newList1
-      });
-
-      expect(worker.GetPostToSendStack()).toEqual([
-        ...post_list_full,
-        post_full_test1_to_send,
-      ]);
-
-      // Executando novo processamento
-      jest.runOnlyPendingTimers();
-
-      expectObservable(worker.WorkerEvent$).toBe('---e', {
-        e: {
-          description: worker.EVENT_ACESSIBILIT_POST_SENT,
-          value: post_full_test1_to_send
-        } as IWorker<IPost>
-      });
-
-      testScheduler.flush();
-
-    
-      // Recebendo uma nova lista de posts
-      const newList2 = post_list_full_test2
-      worker.Action({
-        description: worker.ACTION_STACK_NEW_POSTS,
-        value: newList2
-      });
-
-      expect(worker.GetPostToSendStack()).toEqual([
-        ...post_list_full,
-        post_full_test1_to_send,
-        post_list_full_test2,
-      ]);
-
-      // Executando novo processamento
-      jest.runOnlyPendingTimers();
-
-      expectObservable(worker.WorkerEvent$).toBe('---e', {
-        e: {
-          description: worker.EVENT_ACESSIBILIT_POST_SENT,
-          value: post_list_full_test2[0]
-        } as IWorker<IPost>
-      });
-
-      testScheduler.flush();
-    });
-  });
 
 });
