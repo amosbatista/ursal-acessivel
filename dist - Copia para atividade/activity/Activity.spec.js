@@ -137,7 +137,7 @@ describe('Activity', () => {
         });
         service.RegisterNewAcessibilityFailedPost();
     });
-    it.only('deve registrar um novo post de erro de acessibilidade, num outro dia.', () => {
+    it('deve registrar um novo post de erro de acessibilidade, num outro dia.', () => {
         const initial = {
             today: {
                 TimelineReadingErrors: 12,
