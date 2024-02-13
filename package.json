@@ -8,7 +8,7 @@
     "init": "node ./dist/index.js",
     "tsc": "tsc",
     "test": "jest",
-    "test-report": "npm run tsc && jest --coverage --detectOpenHandles",
+    "test-report": "jest --coverage",
     "watch": "npm run test -- --watch"
   },
   "author": "",
