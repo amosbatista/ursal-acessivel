@@ -30,6 +30,9 @@ export class ActivityService {
 		}
   }
 
+  Get(): IActivity {
+    return {... this.activity}
+  }
   Init(): IActivity {
     this.activity = {
       today: {
