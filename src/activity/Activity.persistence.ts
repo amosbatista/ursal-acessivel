@@ -8,7 +8,7 @@ class ActivityPersistence extends Persistence<IActivity> {
 }
 
 const ActivityFactory = () => {
-  return new ActivityPersistence(writeFile, readFile, './data/timeline.json');
+  return new ActivityPersistence(writeFile, readFile, './data/activity.json');
 }
 
 export { ActivityFactory, ActivityPersistence }
