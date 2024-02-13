@@ -1,23 +1,29 @@
 import { Subject } from "rxjs";
 import { IPersistence } from "./IPersistence";
+import { writeFile, readFile, mkdir, access } from 'node:fs/promises';
+import path from 'path'
 
 abstract class Persistence<T> {
   LoadedData$ = new Subject<IPersistence<T>>();
   SavedData$ = new Subject<IPersistence<T>>();
   
   constructor(
-    private appendFile: any, 
-    private readFile: any,
-    private fileDirName: string
+    private appendFile = writeFile, 
+    private readFileLib = readFile,
+    private fileDirName: string,
+    private pathLib = path,
+    private mkdirLib = mkdir,
+    private accessLib = access,
   ) {
 
   }
 
-  LoadData() {
+  async LoadData() {
     let contents: string;
 
     try{
-      contents = this.readFile(this.fileDirName, { encoding: 'utf8' });
+      await this.TryCreateFolder(this.fileDirName);
+      contents = await this.readFileLib(this.fileDirName, { encoding: 'utf8' });
     }
     catch(error: any) {
       if (error.code === 'ENOENT') {
@@ -70,7 +76,17 @@ abstract class Persistence<T> {
         }
       });
     }
-  }  
+  }
+
+  async TryCreateFolder (fileName: string) {
+
+    const dirName = this.pathLib.dirname(fileName);
+    await this.accessLib(dirName).catch(async () => {
+      await this.mkdirLib(dirName).catch((e) => {
+        throw new Error('Impossível criar arquivo: ' + e);
+      });
+    })
+  }
 }
 
 export {  
