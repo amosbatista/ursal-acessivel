@@ -13,7 +13,7 @@ import post_list_take_top_news from './mocks/post_list_take_top_news';
 import post_persist from './mocks/post_persist';
 import post_to_send from './mocks/post_to_send';
 import { CreateStatusForNonAcessiblePost, IStatus } from './Status';
-import { Observable, Subscriber, of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { IStatusResult } from './Status.service';
 import post_list_full_test1 from './mocks/post_list_full_test1';
 import post_full_test1_to_send from './mocks/post_full_test1_to_send';
@@ -477,7 +477,7 @@ describe('AcessibilityStatus worker', () => {
   
   });
 
-  it.only('deve adicionar posts para envio à partir de action', () => {
+  it('deve adicionar posts para envio à partir de action', () => {
     testScheduler.run((helpers) => {
       const { cold, expectObservable } = helpers;
       
