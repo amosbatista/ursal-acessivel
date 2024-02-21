@@ -113,6 +113,9 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
         });
         return;
       }
+      
+      this.persistence.SaveData(timelineResult.timeline);
+
       const helper = new Timeline(timelineResult.timeline);
       const postsWithoutAcessibilty: IPost[] = helper.GetLocalPostswithoutDescription();
       this.WorkerEvent$.next({

@@ -237,81 +237,87 @@ describe('Timeline worker', () => {
     testScheduler.run((helpers) => {
       const { cold, expectObservable } = helpers;
     
-
-      const persistenceFactory = jest.fn();
+      const SaveDataMock = jest.fn();
+      const persistenceFactory = () => ({
+        LoadedData$: jest.fn(),
+        LoadData: jest.fn(),
+        SavedData$: jest.fn(),
+        SaveData: SaveDataMock,
+      });
+      const timelineMock = {
+        minId: '57756756',
+        posts: [{
+          content: "foo",
+          creationData: '2023-02-17T19:47:15.598Z',
+          id: "1",
+          url: `https://${process.env.INSTANCE_URL}/users/teste/statuses/123445`,
+          user: {
+            id: "1",
+            userName: "foo"
+          },
+          media: [{
+            id: "1",
+            description: "",
+            type: "",
+            url: `https://${process.env.INSTANCE_URL}/users/teste/statuses/123445`
+          }]
+        },{
+          content: "foo",
+          creationData: '2023-02-17T19:47:15.598Z',
+          id: "1",
+          url: "htt://localhost1",
+          user: {
+            id: "1",
+            userName: "foo"
+          },
+          media: [{
+            id: "1",
+            description: "",
+            type: "",
+            url: ""
+          }]
+        },{
+          content: "bar",
+          creationData: '2023-02-17T19:47:15.598Z',
+          id: "2",
+          url: "htt://localhost2",
+          user: {
+            id: "1",
+            userName: "foo"
+          },
+          media: [{
+            id: "1",
+            description: "Some description",
+            type: "",
+            url: ""
+          }]
+        },{
+          content: "bar",
+          creationData: '2023-02-17T19:47:15.598Z',
+          id: "4",
+          url: `https://${process.env.INSTANCE_URL}/teste`,
+          user: {
+            id: "1",
+            userName: "foo"
+          },
+          media: [{
+            id: "1",
+            description: null,
+            type: "",
+            url: ""
+          }]
+        }]
+      };
       const serviceFactory = () => ({
         LoadTimeline: jest.fn(),
         timeline$: cold('----t', {
           t: {
             error: null,
-            timeline: {
-              minId: '57756756',
-              posts: [{
-                content: "foo",
-                creationData: '2023-02-17T19:47:15.598Z',
-                id: "1",
-                url: `https://${process.env.INSTANCE_URL}/users/teste/statuses/123445`,
-                user: {
-                  id: "1",
-                  userName: "foo"
-                },
-                media: [{
-                  id: "1",
-                  description: "",
-                  type: "",
-                  url: `https://${process.env.INSTANCE_URL}/users/teste/statuses/123445`
-                }]
-              },{
-                content: "foo",
-                creationData: '2023-02-17T19:47:15.598Z',
-                id: "1",
-                url: "htt://localhost1",
-                user: {
-                  id: "1",
-                  userName: "foo"
-                },
-                media: [{
-                  id: "1",
-                  description: "",
-                  type: "",
-                  url: ""
-                }]
-              },{
-                content: "bar",
-                creationData: '2023-02-17T19:47:15.598Z',
-                id: "2",
-                url: "htt://localhost2",
-                user: {
-                  id: "1",
-                  userName: "foo"
-                },
-                media: [{
-                  id: "1",
-                  description: "Some description",
-                  type: "",
-                  url: ""
-                }]
-              },{
-                content: "bar",
-                creationData: '2023-02-17T19:47:15.598Z',
-                id: "4",
-                url: `https://${process.env.INSTANCE_URL}/teste`,
-                user: {
-                  id: "1",
-                  userName: "foo"
-                },
-                media: [{
-                  id: "1",
-                  description: null,
-                  type: "",
-                  url: ""
-                }]
-              }]
-            }
+            timeline: timelineMock
           }
         })
       })
-      const worker = new TimelineWorker(persistenceFactory, serviceFactory());
+      const worker = new TimelineWorker(persistenceFactory(), serviceFactory());
       worker.Init();
 
       jest.runOnlyPendingTimers();
@@ -350,6 +356,9 @@ describe('Timeline worker', () => {
           }]
         }]
       } as IWorker<IPost[]>})
+      testScheduler.flush();
+
+      expect(SaveDataMock).lastCalledWith(timelineMock)
     });
     testScheduler.flush();
   })
