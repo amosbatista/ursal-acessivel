@@ -44,6 +44,15 @@ abstract class Persistence<T> {
       return;
     }
     
+    if(!contents) {
+      this.LoadedData$.next({
+        persistenceError: {
+          isErrorNoFile: true,
+        }
+      });
+
+      return;
+    }
     if(contents.trim() === '') {
       this.LoadedData$.next({
         persistenceError: {
