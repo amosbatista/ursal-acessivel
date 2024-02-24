@@ -27,7 +27,7 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
     private service: any = new TimelineMastodonService(),
     timelineRefreshSeconds: number = 60,
   ) {
-    super();
+    super(timelineRefreshSeconds);
     this.SubscribeService();
     this.SetExecutable();
   }
