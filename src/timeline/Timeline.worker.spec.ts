@@ -5,6 +5,10 @@ import { TimelineWorker } from "./TImeline.worker";
 import { IPersistence } from "../persistence/IPersistence";
 import { IPost } from '../posts/Post';
 import { ITimelineService } from './Timeline.Mastodon.service';
+import original_timeline from './mocks/original_timeline';
+import original_timeline_secondcall from './mocks/original_timeline_secondcall';
+import posts_1st_descriptionerror from './mocks/posts_1st_descriptionerror';
+import post_2nd_descriptionerror from './mocks/post_2nd_descriptionerror';
 
 describe('Timeline worker', () => {
   jest.useFakeTimers();
@@ -359,6 +363,7 @@ describe('Timeline worker', () => {
       testScheduler.flush();
 
       expect(SaveDataMock).lastCalledWith(timelineMock)
+      expect(worker.timeline.minId).toBe('57756756')
     });
     testScheduler.flush();
   })
@@ -443,5 +448,67 @@ describe('Timeline worker', () => {
     jest.runOnlyPendingTimers();
 
     expect(actual).toBeTruthy();
+  });
+
+  it('deve fazer o processo inteiro de worker, recebendo timeline, atualizando e processando próxima leva de timeline', () => {
+    process.env.NODE_ENV = 'dev';
+    process.env.INSTANCE_URL='ursal.zone';
+
+    testScheduler.run((helpers) => {
+      const { cold, expectObservable } = helpers;
+    
+      const SaveDataMock = jest.fn();
+      const persistenceFactory = () => ({
+        LoadedData$: jest.fn(),
+        LoadData: jest.fn(),
+        SavedData$: jest.fn(),
+        SaveData: SaveDataMock,
+      });
+
+      const timelineMock1 = original_timeline;
+      const timelineMock2 = original_timeline_secondcall;
+      const LoadTimelineMock = jest.fn();
+      const serviceFactory = () => ({
+        LoadTimeline: LoadTimelineMock,
+        timeline$: cold('----t-----s', {
+          t: {
+            error: null,
+            timeline: timelineMock1
+          },
+          s: {
+            error: null,
+            timeline: timelineMock2
+          },
+        })
+      });
+
+      const worker = new TimelineWorker(persistenceFactory(), serviceFactory());
+      worker.Init();
+
+      // 1a chamada
+      jest.runOnlyPendingTimers();
+
+      expectObservable(worker.WorkerEvent$).toBe('----t-----s', { 
+        t: {
+          description: worker.POST_EMIT_DESCRIPTION,
+          value: posts_1st_descriptionerror
+        } as IWorker<IPost[]>,
+        s: {
+          description: worker.POST_EMIT_DESCRIPTION,
+          value: post_2nd_descriptionerror
+        }  as IWorker<IPost[]>,
+      });
+
+      jest.runOnlyPendingTimers();
+
+      testScheduler.flush();
+
+      expect(SaveDataMock).nthCalledWith(1, timelineMock1)
+      expect(SaveDataMock).nthCalledWith(2, timelineMock2)
+      expect(worker.timeline.minId).toBe('4');
+
+
+    });
+    testScheduler.flush();
   });
 });

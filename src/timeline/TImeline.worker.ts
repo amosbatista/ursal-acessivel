@@ -70,17 +70,46 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
               });
               return;
             }
+
+            if(!saved.content) {
+              subscribe.next({
+                description: this.TIMELINE_ENTRY_DESCRIPTION,
+                error: {
+                  message: 'Timeline foi salva sem conteúdo',
+                  data: null
+                },
+              });
+              return;
+            }
+            
+            this.timeline = saved.content;
             subscribe.next({
               description: this.TIMELINE_ENTRY_DESCRIPTION,
               value: saved.content,
             });
           });
 
+          const timelineToSave = this.GenerateEmptyTimeline();
+          this.timeline = timelineToSave;
           this.persistence.SaveData({
-            timeLine: this.GenerateEmptyTimeline(),
+            timeLine: timelineToSave
           })
           return;
         }
+
+        if(!loaded.content) {
+          subscribe.next({
+            description: this.TIMELINE_ENTRY_DESCRIPTION,
+            error: {
+              message: 'Timeline foi carregada sem erro, mas vazia',
+              data: null
+            },
+          });
+
+          return;
+        }
+        
+        this.timeline = loaded.content;
         subscribe.next({
           description: this.TIMELINE_ENTRY_DESCRIPTION,
           value: loaded.content,
@@ -91,6 +120,7 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
   }
   SubscribeService() {
     this.service.timeline$.subscribe((timelineResult: ITimelineService) => {
+      this.runner?.FreeToAnotherRun();
     
       if(!timelineResult.timeline) {
         
@@ -113,15 +143,19 @@ export class TimelineWorker extends Worker<ITimeline, IPost[]> {
         });
         return;
       }
+      this.timeline = timelineResult.timeline;
       
       this.persistence.SaveData(timelineResult.timeline);
 
       const helper = new Timeline(timelineResult.timeline);
       const postsWithoutAcessibilty: IPost[] = helper.GetLocalPostswithoutDescription();
+
+      if(postsWithoutAcessibilty.length > 0) {
       this.WorkerEvent$.next({
         description: this.POST_EMIT_DESCRIPTION,
         value: postsWithoutAcessibilty
-      })      
+        });
+      }
     })
   }
   GenerateEmptyTimeline (): ITimeline {
