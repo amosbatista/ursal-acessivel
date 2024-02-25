@@ -7,6 +7,7 @@ import { ActivityService } from "./Activity.service";
 import activity_initial from "./mock/activity_initial";
 import { IStatusResult } from "../status/Status.service";
 import { IStatus } from "../status/Status";
+import { ActivytyFormater } from "./Activity.formatter";
 
 describe('activity worker', () => {
   jest.useFakeTimers();
@@ -414,7 +415,7 @@ describe('activity worker', () => {
 
       const different_day = 1
       const momentMock = (() => ({
-        format: jest.fn().mockReturnValue('2024-01-01'),
+        format: jest.fn().mockReturnValueOnce('01/01/2024 12:01:00').mockReturnValueOnce('01/01/2008 00:01:00'),
         diff: () => (different_day)
       }));
 
@@ -424,7 +425,8 @@ describe('activity worker', () => {
       } as unknown as any);
 
       const one_minute = 60;
-      const worker = new ActivityWorker(persistenceFactory(), new ActivityService(momentMock), one_minute, StatusFactory());
+
+      const worker = new ActivityWorker(persistenceFactory(), new ActivityService(momentMock), one_minute, StatusFactory(), new ActivytyFormater(momentMock));
 
       worker.Load().subscribe(() => {
 
@@ -453,12 +455,12 @@ describe('activity worker', () => {
           status: `
       Registro de atividade do robô acessível:
 
-      Última atividade: 2024-01-01, 
+      Última atividade: 01/01/2024 12:01:00, 
       Toots sem descrição alertados hoje: 0, 
       Erros de leitura de timeline, hoje: 1, 
       Falha de envio de toots, hoje: 0, 
 
-      Registros desde o início da operação, em 2024-01-01:
+      Registros desde o início da operação, em 01/01/2024 12:01:00:
       Toots sem descrição alertados: 2, 
       Erros de leitura de timeline: 1, 
       Falha de envio de toots: 1.
