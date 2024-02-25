@@ -7,6 +7,7 @@ import { IPersistence } from "../persistence/IPersistence";
 import { ActivityService } from "./Activity.service";
 import moment from "moment";
 import { StatusService } from "../status/Status.service";
+import { ActivytyFormater } from "./Activity.formatter";
 
 export class ActivityWorker extends Worker<IActivity, IActivity>{
 
@@ -21,7 +22,8 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
     private persistence = ActivityFactory(),
     private activity = new ActivityService(moment),
     timelineRefreshSeconds: number = 60,
-    private statusService = new StatusService()
+    private statusService = new StatusService(),
+    private formatter = new ActivytyFormater(moment)
   ) {
     super(timelineRefreshSeconds);
   }
@@ -106,9 +108,10 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
       if(!this.lastActivity) {
         return;
       }
-
       this.statusService.Post({
-        status: this.WriteActivityPost(this.lastActivity),
+        status: this.WriteActivityPost(
+          this.formatter.format(this.lastActivity)
+        ),
         visibility: "public"
       });
       

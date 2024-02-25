@@ -1,0 +1,6 @@
+const DATE_FORMAT_VIEW = 'DD-MM-YYYY hh:mm:ss';
+const DATE_FORMAT_SYSTEM = 'YYYY-MM-DD hh:mm:ss';
+
+export  {
+  DATE_FORMAT_SYSTEM, DATE_FORMAT_VIEW
+}
