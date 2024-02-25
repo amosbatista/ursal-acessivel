@@ -7,7 +7,7 @@
     "start": "npm run tsc && npm run init",
     "init": "node ./dist/index.js",
     "tsc": "tsc",
-    "test": "jest",
+    "test": "npm run tsc && jest --detectOpenHandles",
     "test-report": "jest --coverage",
     "watch": "npm run test -- --watch"
   },

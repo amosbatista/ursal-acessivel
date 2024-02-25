@@ -4,9 +4,9 @@ import { TimelinePersistence } from "./Timeline.persistence"
 
 describe('Timeline Persistence test', () => {
   let appendFileMock = jest.fn();
-  let openFileMock = jest.fn().mockImplementation(() => {
-    return '{"posts":[],"minId":"2123123123"}';
-  });
+  let openFileMock = async () => {
+    return await '{"posts":[],"minId":"2123123123"}' as unknown as any;
+  };
 
   beforeAll(() => {
     appendFileMock.mockClear();
@@ -24,7 +24,9 @@ describe('Timeline Persistence test', () => {
 
     persistence.LoadedData$.subscribe({
       next: ((actualTimeline:IPersistence<ITimeline>) => {
-        expect(actualTimeline).toEqual(timelineExpected);
+        expect(actualTimeline).toEqual({
+          content: timelineExpected
+        });
       }),
     });
 

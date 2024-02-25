@@ -16,7 +16,7 @@ const activityWorker = new ActivityWorker(
   (Number.parseInt(process.env.REFRESH_TIME_ACTIVITY_HOURS || '12') * 60 * 60)
 );
 
-console.log('Ursal Acessível - Inicializando.');
+console.log('Ursal Acessível - Carregando e chacando ambiente.');
 
 
 timelineWorker.Load().pipe(
@@ -46,7 +46,7 @@ timelineWorker.Load().pipe(
     console.log('Ursal Acessível - Checagem e carregamento finalizado. Configurando processamento...');
     setProcess();
 
-    console.log('Ursal Acessível - Inicializando...');
+    console.log('Ursal Acessível - Iniciando processadores...');
     initWorkers();
   }
 })
