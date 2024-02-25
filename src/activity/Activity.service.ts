@@ -10,8 +10,7 @@ import { IActivity } from "./IActivity";
 export class ActivityService {
     
   private activity: IActivity;
-  private DATE_FORMAT_SYSTEM = 'YYYY-MM-DD';
-  private DATE_FORMAT_VIEW = 'YYYY-MM-DD';
+  DATE_FORMAT_VIEW = 'DD-MM-YYYY hh:mm:ss';
 
   constructor (private dateLibrary: any = moment) {
 		this.activity =  {
@@ -39,13 +38,13 @@ export class ActivityService {
         TimelineReadingErrors: 0,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: this.dateLibrary().format(this.DATE_FORMAT_SYSTEM)
+        LastActivity: this.dateLibrary().format(this.DATE_FORMAT_VIEW)
       },
       allTime: {
         TimelineReadingErrors: 0,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        StartedAt: this.dateLibrary().format(this.DATE_FORMAT_SYSTEM)
+        StartedAt: this.dateLibrary().format(this.DATE_FORMAT_VIEW)
       }
     }
     
@@ -59,7 +58,7 @@ export class ActivityService {
 				TimelineReadingErrors: 0,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: this.dateLibrary().format(this.DATE_FORMAT_SYSTEM)
+        LastActivity: this.dateLibrary().format(this.DATE_FORMAT_VIEW)
 			}
 		};
     
@@ -68,14 +67,14 @@ export class ActivityService {
 
   RegisterNewAcessibilityFailedPost(): IActivity {
     const today = this.dateLibrary();
-    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_SYSTEM);
+    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_VIEW);
 
     if(this.IsThisDateToday(current, today)) {
         this.activity = {
             today: {
 							...this.activity.today,
 							AcessibilityFailedPosts: this.activity.today.AcessibilityFailedPosts + 1,
-							LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+							LastActivity: today.format(this.DATE_FORMAT_VIEW)
             },
 						allTime: {
 							...this.activity.allTime,
@@ -89,7 +88,7 @@ export class ActivityService {
 					TimelineReadingErrors: 0,
 					AcessibilityFailedPosts: 1,
 					PostSendErrors: 0,
-					LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+					LastActivity: today.format(this.DATE_FORMAT_VIEW)
 				},
 				allTime: {
 					...this.activity.allTime,
@@ -103,14 +102,14 @@ export class ActivityService {
 
 	RegisterNewSendStatusError(): IActivity {
     const today = this.dateLibrary();
-    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_SYSTEM);
+    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_VIEW);
 
     if(this.IsThisDateToday(current, today)) {
         this.activity = {
             today: {
 							...this.activity.today,
 							PostSendErrors: this.activity.today.PostSendErrors + 1,
-							LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+							LastActivity: today.format(this.DATE_FORMAT_VIEW)
             },
 						allTime: {
 							...this.activity.allTime,
@@ -124,7 +123,7 @@ export class ActivityService {
 					TimelineReadingErrors: 0,
 					AcessibilityFailedPosts: 0,
 					PostSendErrors: 1,
-					LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+					LastActivity: today.format(this.DATE_FORMAT_VIEW)
 				},
 				allTime: {
 					...this.activity.allTime,
@@ -138,14 +137,14 @@ export class ActivityService {
 
 	RegisterNewTimelineReadError(): IActivity {
     const today = this.dateLibrary();
-    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_SYSTEM);
+    const current = this.dateLibrary(this.activity.today.LastActivity, this.DATE_FORMAT_VIEW);
 
     if(this.IsThisDateToday(current, today)) {
         this.activity = {
             today: {
 							...this.activity.today,
 							TimelineReadingErrors: this.activity.today.TimelineReadingErrors + 1,
-							LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+							LastActivity: today.format(this.DATE_FORMAT_VIEW)
             },
 						allTime: {
 							...this.activity.allTime,
@@ -159,7 +158,7 @@ export class ActivityService {
 					TimelineReadingErrors: 1,
 					AcessibilityFailedPosts: 0,
 					PostSendErrors: 0,
-					LastActivity: today.format(this.DATE_FORMAT_SYSTEM)
+					LastActivity: today.format(this.DATE_FORMAT_VIEW)
 				},
 				allTime: {
 					...this.activity.allTime,

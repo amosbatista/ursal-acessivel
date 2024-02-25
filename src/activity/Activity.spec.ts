@@ -8,7 +8,7 @@ describe('Activity', () => {
     });
 
     it('deve iniciar uma atividade do zero quando iniciado', () => {
-      const dateLibFormatMock = jest.fn().mockReturnValue('2005-12-01');
+      const dateLibFormatMock = jest.fn().mockReturnValue('01/12/2025');
       const dateLibFactory = () => ({
         format: dateLibFormatMock
       });
@@ -16,25 +16,25 @@ describe('Activity', () => {
       const activityService = new ActivityService(dateLibFactory);
       const actual:IActivity = activityService.Init();
 
-      expect(dateLibFormatMock).toBeCalledWith('YYYY-MM-DD')
+      expect(dateLibFormatMock).toBeCalledWith(activityService.DATE_FORMAT_VIEW)
       expect(actual).toEqual({
         today: {
             TimelineReadingErrors: 0,
             AcessibilityFailedPosts: 0,
             PostSendErrors: 0,
-            LastActivity: '2005-12-01'
+            LastActivity: '01/12/2025'
         },
         allTime: {
             TimelineReadingErrors: 0,
             AcessibilityFailedPosts: 0,
             PostSendErrors: 0,
-            StartedAt: '2005-12-01'
+            StartedAt: '01/12/2025'
         }
       });
     });
 
     it('deve reiniciar uma atividade do zero quando carregado, reiniciando os contadores de hoje', () => {
-      const dateLibFormatMock = jest.fn().mockReturnValue('2010-12-01');
+      const dateLibFormatMock = jest.fn().mockReturnValue('01/12/2012');
       const dateLibFactory = () => ({
         format: dateLibFormatMock
       });
@@ -46,37 +46,37 @@ describe('Activity', () => {
             TimelineReadingErrors: 100,
             AcessibilityFailedPosts: 50,
             PostSendErrors: 30,
-            LastActivity: '2003-01-01'
+            LastActivity: '01/12/2012'
         },
         allTime: {
             TimelineReadingErrors: 11245,
             AcessibilityFailedPosts: 12221,
             PostSendErrors: 12,
-            StartedAt: '2000-12-03'
+            StartedAt: '03/01/2012'
         }
       }
       const actual:IActivity = activityService.Load(loaded);
 
-      expect(dateLibFormatMock).toBeCalledWith('YYYY-MM-DD')
+      expect(dateLibFormatMock).toBeCalledWith(activityService.DATE_FORMAT_VIEW)
       expect(actual).toEqual({
         today: {
             TimelineReadingErrors: 0,
             AcessibilityFailedPosts: 0,
             PostSendErrors: 0,
-            LastActivity: '2010-12-01'
+            LastActivity: '01/12/2012'
         },
         allTime: {
           TimelineReadingErrors: 11245,
           AcessibilityFailedPosts: 12221,
           PostSendErrors: 12,
-          StartedAt: '2000-12-03'
+          StartedAt: '03/01/2012'
         }
       });
     });
 
     it('deve registrar um novo post de erro de acessibilidade, no mesmo dia.', () => {
       const dateLibFactory = (() => ({
-        format: jest.fn().mockReturnValue('2024-01-03'),
+        format: jest.fn().mockReturnValue('03/01/2024'),
         diff: jest.fn().mockReturnValue(0)
       }));
 
@@ -85,13 +85,13 @@ describe('Activity', () => {
               TimelineReadingErrors: 0,
               AcessibilityFailedPosts: 1,
               PostSendErrors: 0,
-              LastActivity: '2024-01-03'
+              LastActivity: '03/01/2024'
           },
           allTime: {
               TimelineReadingErrors: 3000,
               AcessibilityFailedPosts: 31,
               PostSendErrors: 10,
-              StartedAt: '1998-01-01'
+              StartedAt: '01/01/1998'
           }
       };
       
@@ -105,13 +105,13 @@ describe('Activity', () => {
             TimelineReadingErrors: 0,
             AcessibilityFailedPosts: 1,
             PostSendErrors: 0,
-            LastActivity: '2024-01-03'
+            LastActivity: '03/01/2024'
         },
         allTime: {
             TimelineReadingErrors: 3000,
             AcessibilityFailedPosts: 32,
             PostSendErrors: 10,
-            StartedAt: '1998-01-01'
+            StartedAt: '01/01/1998'
         }
     });
 
@@ -122,13 +122,13 @@ describe('Activity', () => {
             TimelineReadingErrors: 0,
             AcessibilityFailedPosts: 2,
             PostSendErrors: 0,
-            LastActivity: '2024-01-03'
+            LastActivity: '03/01/2024'
         },
         allTime: {
             TimelineReadingErrors: 3000,
             AcessibilityFailedPosts: 33,
             PostSendErrors: 10,
-            StartedAt: '1998-01-01'
+            StartedAt: '01/01/1998'
         }
       });
   });
@@ -136,7 +136,7 @@ describe('Activity', () => {
 
   it('deve registrar um novo post de erro de acessibilidade, e zerar contadores de hoje, caso seja o dia seguinte.', () => {
     const dateLibFactory = (() => ({
-      format: jest.fn().mockReturnValue('2024-01-04'),
+      format: jest.fn().mockReturnValue('03/01/2004'),
       diff: jest.fn().mockReturnValue(1)
     }));
 
@@ -145,13 +145,13 @@ describe('Activity', () => {
             TimelineReadingErrors: 10,
             AcessibilityFailedPosts: 5,
             PostSendErrors: 3,
-            LastActivity: '2000-01-03'
+            LastActivity: '03/01/2004'
         },
         allTime: {
             TimelineReadingErrors: 3000,
             AcessibilityFailedPosts: 31,
             PostSendErrors: 10,
-            StartedAt: '1998-01-01'
+            StartedAt: '01/01/1998'
         }
     };
     
@@ -165,13 +165,13 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 1,
           PostSendErrors: 0,
-          LastActivity: '2024-01-04'
+          LastActivity: '03/01/2004'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 32,
           PostSendErrors: 10,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
 
@@ -182,20 +182,20 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 1,
           PostSendErrors: 0,
-          LastActivity: '2024-01-04'
+          LastActivity: '03/01/2004'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 33,
           PostSendErrors: 10,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
   });
 
   it('deve registrar um novo erro de post no mesmo dia.', () => {
     const dateLibFactory = (() => ({
-      format: jest.fn().mockReturnValue('2024-02-14'),
+      format: jest.fn().mockReturnValue('14/02/2024'),
       diff: jest.fn().mockReturnValue(-1)
     }));
 
@@ -204,13 +204,13 @@ describe('Activity', () => {
             TimelineReadingErrors: 10,
             AcessibilityFailedPosts: 5,
             PostSendErrors: 3,
-            LastActivity: '2000-01-03'
+            LastActivity: '03/01/2000'
         },
         allTime: {
             TimelineReadingErrors: 3000,
             AcessibilityFailedPosts: 31,
             PostSendErrors: 10,
-            StartedAt: '1998-01-01'
+            StartedAt: '01/01/1998'
         }
     };
     
@@ -224,13 +224,13 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 0,
           PostSendErrors: 1,
-          LastActivity: '2024-02-14'
+          LastActivity: '14/02/2024'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 11,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
 
@@ -241,20 +241,20 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 0,
           PostSendErrors: 2,
-          LastActivity: '2024-02-14'
+          LastActivity: '14/02/2024'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 12,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
   });
 
   it('deve registrar um novo erro de post no dia seguinte e zerar contadores de hoje, caso seja o dia seguinte.', () => {
     const dateLibFactory = (() => ({
-      format: jest.fn().mockReturnValue('2024-02-14'),
+      format: jest.fn().mockReturnValue('14/02/2024'),
       diff: jest.fn().mockReturnValue(1)
     }));
 
@@ -263,13 +263,13 @@ describe('Activity', () => {
             TimelineReadingErrors: 10,
             AcessibilityFailedPosts: 5,
             PostSendErrors: 3,
-            LastActivity: '2000-01-03'
+            LastActivity: '03/01/2000'
         },
         allTime: {
             TimelineReadingErrors: 3000,
             AcessibilityFailedPosts: 31,
             PostSendErrors: 10,
-            StartedAt: '1998-01-01'
+            StartedAt: '01/01/1998'
         }
     };
     
@@ -283,13 +283,13 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 0,
           PostSendErrors: 1,
-          LastActivity: '2024-02-14'
+          LastActivity: '14/02/2024'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 11,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
 
@@ -300,13 +300,13 @@ describe('Activity', () => {
           TimelineReadingErrors: 0,
           AcessibilityFailedPosts: 0,
           PostSendErrors: 1,
-          LastActivity: '2024-02-14'
+          LastActivity: '14/02/2024'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 12,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
     });
 
@@ -314,7 +314,7 @@ describe('Activity', () => {
 
 it('deve registrar um novo erro de leitura timeline no mesmo dia.', () => {
   const dateLibFactory = (() => ({
-    format: jest.fn().mockReturnValue('2024-02-14'),
+    format: jest.fn().mockReturnValue('14/02/2024'),
     diff: jest.fn().mockReturnValue(-1)
   }));
 
@@ -323,13 +323,13 @@ it('deve registrar um novo erro de leitura timeline no mesmo dia.', () => {
           TimelineReadingErrors: 10,
           AcessibilityFailedPosts: 5,
           PostSendErrors: 3,
-          LastActivity: '2000-01-03'
+          LastActivity: '03/01/2000'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 10,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
   };
   
@@ -343,13 +343,13 @@ it('deve registrar um novo erro de leitura timeline no mesmo dia.', () => {
         TimelineReadingErrors: 1,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: '2024-02-14'
+        LastActivity: '14/02/2024'
     },
     allTime: {
         TimelineReadingErrors: 3001,
         AcessibilityFailedPosts: 31,
         PostSendErrors: 10,
-        StartedAt: '1998-01-01'
+        StartedAt: '01/01/1998'
     }
   });
 
@@ -360,20 +360,20 @@ it('deve registrar um novo erro de leitura timeline no mesmo dia.', () => {
         TimelineReadingErrors: 2,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: '2024-02-14'
+        LastActivity: '14/02/2024'
     },
     allTime: {
         TimelineReadingErrors: 3002,
         AcessibilityFailedPosts: 31,
         PostSendErrors: 10,
-        StartedAt: '1998-01-01'
+        StartedAt: '01/01/1998'
     }
   });
 });
 
 it('deve registrar um novo erro de leitura de timeline no dia seguinte e zerar contadores de hoje, caso seja o dia seguinte.', () => {
   const dateLibFactory = (() => ({
-    format: jest.fn().mockReturnValue('2024-02-14'),
+    format: jest.fn().mockReturnValue('14/02/2024'),
     diff: jest.fn().mockReturnValue(1)
   }));
 
@@ -382,13 +382,13 @@ it('deve registrar um novo erro de leitura de timeline no dia seguinte e zerar c
           TimelineReadingErrors: 10,
           AcessibilityFailedPosts: 5,
           PostSendErrors: 3,
-          LastActivity: '2000-01-03'
+          LastActivity: '03/01/2000'
       },
       allTime: {
           TimelineReadingErrors: 3000,
           AcessibilityFailedPosts: 31,
           PostSendErrors: 10,
-          StartedAt: '1998-01-01'
+          StartedAt: '01/01/1998'
       }
   };
   
@@ -402,13 +402,13 @@ it('deve registrar um novo erro de leitura de timeline no dia seguinte e zerar c
         TimelineReadingErrors: 1,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: '2024-02-14'
+        LastActivity: '14/02/2024'
     },
     allTime: {
         TimelineReadingErrors: 3001,
         AcessibilityFailedPosts: 31,
         PostSendErrors: 10,
-        StartedAt: '1998-01-01'
+        StartedAt: '01/01/1998'
     }
   });
 
@@ -419,13 +419,13 @@ it('deve registrar um novo erro de leitura de timeline no dia seguinte e zerar c
         TimelineReadingErrors: 1,
         AcessibilityFailedPosts: 0,
         PostSendErrors: 0,
-        LastActivity: '2024-02-14'
+        LastActivity: '14/02/2024'
     },
     allTime: {
         TimelineReadingErrors: 3002,
         AcessibilityFailedPosts: 31,
         PostSendErrors: 10,
-        StartedAt: '1998-01-01'
+        StartedAt: '01/01/1998'
     }
   });
 
