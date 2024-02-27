@@ -413,10 +413,10 @@ describe('activity worker', () => {
         SaveData: saveDataMock
       } as unknown as any);
 
-      const different_day = 1
+      const same_day = 0
       const momentMock = (() => ({
         format: jest.fn().mockReturnValueOnce('01/01/2024 12:01:00').mockReturnValueOnce('01/01/2008 00:01:00'),
-        diff: () => (different_day)
+        diff: () => (same_day)
       }));
 
       const StatusPostMock = jest.fn();
@@ -451,17 +451,45 @@ describe('activity worker', () => {
 
         jest.runOnlyPendingTimers();
 
-        expect(StatusPostMock).toHaveBeenCalledWith({
+        expect(StatusPostMock).nthCalledWith(1, {
           status: `
       Registro de atividade do robô acessível:
 
       Última atividade: 01/01/2024 12:01:00, 
-      Toots sem descrição alertados hoje: 0, 
+      Toots sem descrição alertados hoje: 2, 
       Erros de leitura de timeline, hoje: 1, 
-      Falha de envio de toots, hoje: 0, 
+      Falha de envio de toots, hoje: 1, 
 
       Registros desde o início da operação, em 01/01/2024 12:01:00:
       Toots sem descrição alertados: 2, 
+      Erros de leitura de timeline: 1, 
+      Falha de envio de toots: 1.
+    `,
+          visibility: 'public'
+        } as IStatus);
+
+
+        worker.Action({
+          description: worker.ACTION_NEW_ACESSIBILITY_POST,
+        });
+
+        worker.Action({
+          description: worker.ACTION_NEW_ACESSIBILITY_POST,
+        });
+
+        jest.runOnlyPendingTimers();
+
+        expect(StatusPostMock).nthCalledWith(2, {
+          status: `
+      Registro de atividade do robô acessível:
+
+      Última atividade: 01/01/2024 12:01:00, 
+      Toots sem descrição alertados hoje: 4, 
+      Erros de leitura de timeline, hoje: 1, 
+      Falha de envio de toots, hoje: 1, 
+
+      Registros desde o início da operação, em 01/01/2024 12:01:00:
+      Toots sem descrição alertados: 4, 
       Erros de leitura de timeline: 1, 
       Falha de envio de toots: 1.
     `,
