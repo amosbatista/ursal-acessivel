@@ -1,11 +1,10 @@
 import { ActivityWorker } from "./activity/Activity.worker";
 import { AcessibilityStatusWorker } from "./status/AcessibilityStatus.worker";
 import { TimelineWorker } from "./timeline/TImeline.worker";
-import { Observable, combineLatest, of, pipe, switchMap, throwError } from 'rxjs';
+import { of, switchMap, throwError } from 'rxjs';
 import 'dotenv/config'
-import { IWorker } from "./worker/IWorker";
 
-const TIMELINE_REFRESH_SECONDS = 60 * 10;
+const TIMELINE_REFRESH_SECONDS = 60 * 20;
 const SEND_POST_REFRESH_SECONDS = 60 * 3;
 
 const timelineWorker = new TimelineWorker(undefined, undefined, TIMELINE_REFRESH_SECONDS)
@@ -13,7 +12,9 @@ const acessibilityWorker = new AcessibilityStatusWorker(undefined, undefined, SE
 const activityWorker = new ActivityWorker(
   undefined, 
   undefined, 
-  (Number.parseInt(process.env.REFRESH_TIME_ACTIVITY_HOURS || '12') * 60 * 60)
+  (Number.parseInt(process.env.REFRESH_TIME_ACTIVITY_HOURS || '12') * 60 * 60),
+  undefined,
+  undefined
 );
 
 console.log('Ursal Acessível - Carregando e chacando ambiente.');
@@ -112,5 +113,5 @@ const initWorkers = () => {
   acessibilityWorker.SetExecutable();
   acessibilityWorker.Init();
   activityWorker.SetExecutable();
-  acessibilityWorker.Init();
+  activityWorker.Init();
 }

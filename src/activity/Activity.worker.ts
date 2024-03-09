@@ -8,6 +8,7 @@ import { ActivityService } from "./Activity.service";
 import moment from "moment";
 import { StatusService } from "../status/Status.service";
 import { ActivytyFormater } from "./Activity.formatter";
+import { IStatus } from "../status/Status";
 
 export class ActivityWorker extends Worker<IActivity, IActivity>{
 
@@ -15,8 +16,6 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
   ACTION_NEW_ACESSIBILITY_POST = 'novo post erro acessibilidade'
   ACTION_TIMELINE_READ_ERROR = 'novo erro leitura timeline'
   ACTION_SEND_POST_ERROR = 'novo erro envio leitura'
-
-  lastActivity?: IActivity;
   
   constructor (
     private persistence = ActivityFactory(),
@@ -74,6 +73,9 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
           return;
         }
 
+        if(loaded.content) {
+          this.activity.Load(loaded.content)
+        }
         subscriber.next({
           description: this.ACTIVITY_LOADED,
           value: loaded.content,
@@ -87,35 +89,37 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
   }
   Action(content: IWorker<IActivity>): void {
     if(content.description === this.ACTION_NEW_ACESSIBILITY_POST) {
-      this.lastActivity = this.activity.RegisterNewAcessibilityFailedPost();
-      this.persistence.SaveData(this.lastActivity);
+      this.activity.RegisterNewAcessibilityFailedPost();
+      this.persistence.SaveData(this.activity.Get());
     }
 
     if(content.description === this.ACTION_TIMELINE_READ_ERROR) {
-      this.lastActivity = this.activity.RegisterNewTimelineReadError();
-      this.persistence.SaveData(this.lastActivity);
+      this.activity.RegisterNewTimelineReadError();
+      this.persistence.SaveData(this.activity.Get());
     }
 
     if(content.description === this.ACTION_SEND_POST_ERROR) {
-      this.lastActivity = this.activity.RegisterNewSendStatusError();
-      this.persistence.SaveData(this.lastActivity);
+      this.activity.RegisterNewSendStatusError();
+      this.persistence.SaveData(this.activity.Get());
     }
   }
 
   SetExecutable(): void {
     super.SetExecutable(() => {
       
-      if(!this.lastActivity) {
-        return;
-      }
-      this.statusService.Post({
+      this.runner?.FreeToAnotherRun();
+      const activityPost: IStatus = {
         status: this.WriteActivityPost(
-          this.formatter.format(this.lastActivity)
+          this.formatter.format(this.activity.Get())
         ),
         visibility: "public"
-      });
-      
-      this.runner?.FreeToAnotherRun();
+      }
+      this.statusService.Post(activityPost);
+      /*this.statusService.Post(activityPost).subscribe({
+        next: (result) => {
+          console.log('Resultado post', result)
+        }
+      });*/
     })
   }
 
