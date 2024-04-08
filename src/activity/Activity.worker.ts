@@ -114,12 +114,13 @@ export class ActivityWorker extends Worker<IActivity, IActivity>{
         ),
         visibility: "public"
       }
-      this.statusService.Post(activityPost);
-      /*this.statusService.Post(activityPost).subscribe({
+      //this.statusService.Post(activityPost);
+      console.log('pre activity')
+      this.statusService.Post(activityPost).subscribe({
         next: (result) => {
           console.log('Resultado post', result)
         }
-      });*/
+      });
     })
   }
 
