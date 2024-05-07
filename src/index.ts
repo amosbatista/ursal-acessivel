@@ -3,8 +3,10 @@ import { AcessibilityStatusWorker } from "./status/AcessibilityStatus.worker";
 import { TimelineWorker } from "./timeline/TImeline.worker";
 import { of, switchMap, throwError } from 'rxjs';
 import 'dotenv/config'
+import { StatusService } from "./status/Status.service";
+import { IStatus } from "./status/Status";
 
-const TIMELINE_REFRESH_SECONDS = 60 * 20;
+const TIMELINE_REFRESH_SECONDS = 60 * 30;
 const SEND_POST_REFRESH_SECONDS = 60 * 3;
 
 const timelineWorker = new TimelineWorker(undefined, undefined, TIMELINE_REFRESH_SECONDS)
@@ -16,6 +18,8 @@ const activityWorker = new ActivityWorker(
   undefined,
   undefined
 );
+
+const statusService = new StatusService();
 
 console.log('Ursal Acessível - Carregando e chacando ambiente.');
 
@@ -49,6 +53,14 @@ timelineWorker.Load().pipe(
 
     console.log('Ursal Acessível - Iniciando processadores...');
     initWorkers();
+
+    const status:IStatus = {
+      status: `@acessivel Iniciado processamento após verificação inicial...`,
+      visibility: 'direct'
+    }
+    statusService.Post(status).subscribe({ error: (err) => {
+      console.log(err)
+    }});
   }
 })
 
@@ -66,6 +78,14 @@ const isErrorAtLoaded = (loaded: any): boolean => {
 const setProcess = () => {
   timelineWorker.WorkerEvent$.subscribe({
     next: (timelineResult) => {
+
+      const status:IStatus = {
+        status: `@acessivel Update timeline: ${timelineResult.value ? timelineResult.value.length : ' sem toots'}`,
+        visibility: 'direct'
+      }
+      statusService.Post(status).subscribe({ error: (err) => {
+        console.log(err)
+      }});
 
       if(timelineResult.description === timelineWorker.TIMELINE_READ_ERROR) {
         activityWorker.Action({
