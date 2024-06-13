@@ -21,7 +21,7 @@ const activityWorker = new ActivityWorker(
 
 const statusService = new StatusService();
 
-console.log('Ursal Acessível - Carregando e chacando ambiente.');
+console.log('Ursal Acessível - Carregando e checando ambiente.');
 
 
 timelineWorker.Load().pipe(
@@ -84,7 +84,7 @@ const setProcess = () => {
         visibility: 'direct'
       }
       statusService.Post(status).subscribe({ error: (err) => {
-        console.log(err)
+        console.log('Erro ao postar status', err)
       }});
 
       if(timelineResult.description === timelineWorker.TIMELINE_READ_ERROR) {
