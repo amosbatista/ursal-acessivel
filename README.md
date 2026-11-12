@@ -13,7 +13,7 @@ _Repo metadata_
 [![License](https://img.shields.io/badge/License-MIT-red)](#license)
 [![issues - ursal-acessivel](https://img.shields.io/github/issues/amosbatista/ursal-acessivel)](https://github.com/amosbatista/ursal-acessivel/issues)
 
-[![coverage - 87,11%](https://img.shields.io/static/v1?label=coverage&message=72%2C34%&color=2ea44f)](https://)
+[![coverage - 86,78%](https://img.shields.io/static/v1?label=coverage&message=72%2C34%&color=2ea44f)](https://)
 
 ## License
 Released under [MIT](/LICENSE) by [@amosbatista](https://github.com/amosbatista).
@@ -24,18 +24,20 @@ Robô escrito em NodeJS para Mastodon que serve para conscientizar usuários da 
 - Execute `npm install` para baixar as dependências do projeto;
 - Copie o arquivo `.dev.env` e renomeie para `.env`;
 - Edite o arquivo `.env` informando o que se pede:
-    - Logado com a conta que será usada pelo robô, [visite esta página](https://token.bolha.one/?client_name=Rob%C3%B4+Acess%C3%ADvel&scopes=read+write) e preencha o terceiro campo;
-    - Cole o código gerado no link acima na variável `MASTODON_KEY` do arquivo `.env`;
     - Informe, dentro das aspas, a URL da sua instância (sem `https://`) na variável `INSTANCE_URL`. Exemplo: `"bolha.one"`.;
     - Defina, dentro das aspas, o nome da sua instância na variável `INSTANCE_NAME`. Exemplo: `"Bolha.one"`;
     - Na variável `DM_MSG` você define, também dentro das aspas duplas, a mensagem que será enviada aos usuários notificados. Você pode incluir atalhos de `:emojis:` e também quebras de linha (`\\n`).
+- Execute `npm run mastodon:auth` antes da primeira inicialização;
+- Abra no navegador a URL exibida pelo comando, entre com a conta usada pelo robô e autorize o acesso;
+- Copie o código exibido pelo Mastodon e cole-o no terminal. O token será validado e salvo em `data/mastodon-auth.json`;
 - Execute o projeto com `npm run start`;
 - Aguarde o robô iniciar, o que pode levar até três minutos.
+
+O arquivo `data/mastodon-auth.json` contém segredos equivalentes a uma senha. Ele não deve ser versionado, compartilhado ou incluído na imagem Docker. Se o acesso for revogado no Mastodon, execute `npm run mastodon:auth` novamente.
 
 Exemplo de arquivo `.env`:
 
 ```
-MASTODON_KEY=3JZ68k2bjbIEBWzMfs8G0vfc7dJDSnhkSqrgs0n2vPddP5UIjmztOJTAbaQD8YT
 INSTANCE_URL="bolha.one"
 INSTANCE_NAME="Bolha.one"
 DM_MSG="Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nReparei que este post (${post.url}) tem uma imagem ou vídeo sem descrição. Como na ${process.env.INSTANCE_NAME} temos muito apreço por abrir as portas e incluir pessoas com deficiência visual, gostaria de reforçar com você este acordo de acessibilidade.\\n\\nPor favor, veja se é possível revisar e editar seu toot (via app ou web), adicionando descrição nas mídias.\\n\\nMuito obrigado por sua compreensão e apoio!"
@@ -68,17 +70,27 @@ Você dockerizar a execução do bot. Para isso, use a imagem `acessivel:latest`
 ``` bash
 docker run -d \
     -e PYTHONUNBUFFERED=true \
-    -e MASTODON_KEY=3JZ68k2bjbIEBWzMfs8G0vfc7dJDSnhkSqrgs0n2vPddP5UIjmztOJTAbaQD8YT \
     -e INSTANCE_URL=botsin.space \
     -e INSTANCE_NAME=Bolha.one \
     -e DM_MSG="Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nReparei que este post (${post.url}) tem uma imagem ou vídeo sem descrição. Como na ${process.env.INSTANCE_NAME} temos muito apreço por abrir as portas e incluir pessoas com deficiência visual, gostaria de reforçar com você este acordo de acessibilidade.\\n\\nPor favor, veja se é possível revisar e editar seu toot (via app ou web), adicionando descrição nas mídias.\\n\\nMuito obrigado por sua compreensão e apoio!" \
     -e TZ=America/Recife \
+    -v /data/acessivel:/usr/app/acessivel/data \
     --name mastofm \
     --restart unless-stopped \
     code.bolha.one/bolha/acessivel:latest
 ```
 
-Informe as variáveis de ambiente `MASTODON_KEY`, `INSTANCE_URL`, `INSTANCE_NAME` e `DM_MSG` como você faria no arquivo `.env`. Se preferir, edite e use o arquivo `docker-compose.yml` com o Portainer Stacks ou o `docker-compose up -d`.
+Antes de subir o serviço pela primeira vez, autentique a conta usando o mesmo volume persistente:
+
+```bash
+docker run --rm -it \
+    -e INSTANCE_URL=botsin.space \
+    -v /data/acessivel:/usr/app/acessivel/data \
+    code.bolha.one/bolha/acessivel:latest \
+    npm run mastodon:auth
+```
+
+Informe `INSTANCE_URL`, `INSTANCE_NAME` e `DM_MSG` como faria no arquivo `.env`. O volume `/data/acessivel:/usr/app/acessivel/data` precisa estar presente tanto no comando de autenticação quanto no serviço normal. Se preferir, edite e use o arquivo `docker-compose.yml` com o Portainer Stacks ou `docker-compose up -d`.
 
 ## Créditos
 

@@ -3,6 +3,8 @@ import { ITimeline } from './Timeline.helpers';
 import { Post } from '../posts/Post';
 import axios from 'axios';
 import { IError } from '../IError';
+import { IAccessTokenProvider, MissingAccessTokenProvider } from '../auth/AccessTokenProvider';
+import { SanitizeHttpError } from '../MastodonHttpError';
 
 interface ITimelineService { 
   timeline: ITimeline | null ,
@@ -12,19 +14,27 @@ class TimelineMastodonService {
 
   timeline$ = new Subject<ITimelineService>();
 
+  constructor(
+    private tokenProvider: IAccessTokenProvider = new MissingAccessTokenProvider(),
+    private httpClient: any = axios,
+  ) {}
+
   LoadTimeline = async (minId: string) => {
 
     try{
-      const urlSearch = `https://${process.env.INSTANCE_URL}/api/v1/timelines/public?local=true&only_media=true&limit=40
-      ${ minId != "0" ? `&min_id=${minId}` : '' } `;
+      const urlSearch = `https://${process.env.INSTANCE_URL}/api/v1/timelines/public`;
 
-      // console.log("iniciando listagem timeline", urlSearch)
-
-      await axios.get(urlSearch, {
+      await this.httpClient.get(urlSearch, {
+        params: {
+          local: true,
+          only_media: true,
+          limit: 40,
+          ...(minId !== '0' ? { min_id: minId } : {}),
+        },
         headers: {
-          Autorizathion: `Bearer ${process.env.MASTODON_KEY}`,
+          Authorization: `Bearer ${this.tokenProvider.GetAccessToken()}`,
         }
-      }).then(response => {
+      }).then((response: any) => {
         const lastPost = response.data.length - 1;
         if(!response.data[lastPost]) {
           this.timeline$.next({
@@ -50,44 +60,28 @@ class TimelineMastodonService {
           error: null,
           timeline
         });
-      }).catch(err => {
+      }).catch((err: any) => {
+        const safeError = SanitizeHttpError(err);
         this.timeline$.next({
           timeline: null,
           error: {
             message: 'erro na requisição timeline',
-            objectError: err
+            objectError: safeError
           }
         });
       });
     }
     catch(err) {
+      const safeError = SanitizeHttpError(err);
       this.timeline$.next({
         timeline: null,
         error: {
           message: 'erro na requisição timeline (try catch)',
-          objectError: err
+          objectError: safeError
         }
       });      
     }
 
-    /*this.timeline$.next({
-      posts: [{
-        content: "foo",
-        id: "1",
-        user: {
-          id: "1",
-          userName: "foo"
-        },
-        media: [{
-          id: "1",
-          description: "",
-          type: "",
-          url: ""
-        }]
-      }]
-    })
-    console.log("executado")
-    */
 
     
   }
