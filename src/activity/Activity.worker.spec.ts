@@ -8,6 +8,7 @@ import activity_initial from "./mock/activity_initial";
 import { IStatusResult } from "../status/Status.service";
 import { IStatus } from "../status/Status";
 import { ActivytyFormater } from "./Activity.formatter";
+import { of } from "rxjs";
 
 describe('activity worker', () => {
   jest.useFakeTimers();
@@ -16,7 +17,6 @@ describe('activity worker', () => {
   let testScheduler: TestScheduler;
 
   process.env.NODE_ENV = 'dev';
-  process.env.MASTODON_KEY = 'foo';
   process.env.INSTANCE_URL = 'ursal.zone';
   process.env.INSTANCE_NAME = "ursal";
   process.env.DM_MSG = "Alto lá! :policia: \\n\\nCom licença, @${post.user.userName}.\\n\\nReparei que este post (${post.url}) tem uma imagem ou vídeo sem descrição. Como na ${process.env.INSTANCE_NAME} temos muito apreço por abrir as portas e incluir pessoas com deficiência visual, gostaria de reforçar com você este acordo de acessibilidade.\\n\\nPor favor, veja se é possível revisar e editar seu toot (via app ou web), adicionando descrição nas mídias.\\n\\nMuito obrigado por sua compreensão e apoio!";
@@ -419,7 +419,7 @@ describe('activity worker', () => {
         diff: () => (same_day)
       }));
 
-      const StatusPostMock = jest.fn();
+      const StatusPostMock = jest.fn().mockReturnValue(of({}));
       const StatusFactory = () => ({
         Post: StatusPostMock
       } as unknown as any);

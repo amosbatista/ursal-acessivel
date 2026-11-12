@@ -1,13 +1,13 @@
 import { Subject } from 'rxjs';
 import WebSocket from 'ws';
+import { IAccessTokenProvider, MissingAccessTokenProvider } from '../auth/AccessTokenProvider';
 
 class TimelineStreamService {
   MastodomTimeline$ = new Subject<any>();
   pingTimeout: any
 
   constructor (
-    //private mastodonConnection: any
-    
+    private tokenProvider: IAccessTokenProvider = new MissingAccessTokenProvider(),
   ){}
 
    async heartbeat() {
@@ -27,9 +27,9 @@ class TimelineStreamService {
   Connect () {
 
     try{
-      const wb = new WebSocket('wss://ursal.zone/api/v1/streaming/public/local', {
+      const wb = new WebSocket(`wss://${process.env.INSTANCE_URL}/api/v1/streaming/public/local`, {
         headers: {
-          Authorization: `Bearer ${process.env.MASTODON_KEY}`
+          Authorization: `Bearer ${this.tokenProvider.GetAccessToken()}`
         }
       })
 
